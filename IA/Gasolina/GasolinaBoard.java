@@ -107,12 +107,7 @@ public class GasolinaBoard {
             return data.get(row).get(col);
         }
     }
-
-    // Initialize static variables
-    static {
-        camions = new ArrayList<>();
-        gasolineras = new ArrayList<>();
-    }
+    
     /*
     // Generates a random initial solution for hill-climbing.
     // Strategy: create one Viaje per camion (if any), shuffle gasolineras and assign each randomly to a camion's viaje.
