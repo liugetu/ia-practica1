@@ -10,40 +10,26 @@ import java.util.Collections;
 public class GasolinaBoard {
     /* Class independent from AIMA classes
        - It has to implement the state of the problem and its operators
-     *
-
-    /* State data structure
-        vector with the parity of the coins (we can assume 0 = heads, 1 = tails
-     */
-
-    // declarar un board
-    //private int [] board;
-    //private static int [] solution;
-
+    */
 
     // Centres i gasolineres (fixes, poden ser estàtiques per estalviar memòria)
-    static List<Distribucion> camions;         // coord. dels centres de distribució (si un centre te multiples camions, les seves coords. apareixen repetides)
-    static List<Gasolinera> gasolineras;       // coord. i peticions de cada gasolinera
-    
+    static ArrayList<Distribucion> camions;         // coord. dels centres de distribució (si un centre te multiples camions, les seves coords. apareixen repetides)
+    static ArrayList<Gasolinera> gasolineras;       // coord. i peticions de cada gasolinera
+
     // Assignació de peticions a viatges
-    List<Viaje> viajes;  
-    
+    ArrayList<Viaje> viajes;  
+
     // Informació de control
     double beneficioActual; // V = 1000*p(d) - 2*2*d(c,g) - 1000*p(d+1)
     double costeTotalKm;
-    
 
     /* Constructor */
-    public GasolinaBoard(int []init) {
-        this(); // delegate to no-arg constructor
-        // optionally use init to set up board/configuration later
-    }
-
-    // no-arg constructor to initialize collections and control variables
-    public GasolinaBoard() {
-        viajes = new ArrayList<>();
-        beneficioActual = 0;
-        costeTotalKm = 0;
+    public GasolinaBoard(ArrayList<Distribucion> camions, ArrayList<Gasolinera> gasolineras) {
+        this.camions = camions;
+        this.gasolineras = gasolineras;
+        this.viajes = new ArrayList<>();
+        this.beneficioActual = 0;
+        this.costeTotalKm = 0;
     }
 
     /* Operadors */
