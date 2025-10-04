@@ -58,21 +58,4 @@ public class Main {
             System.out.println(action);
         }
     }
-
-    // Define the Viaje class
-    static class Viaje {
-        int idCamio;
-        ArrayList<Gasolinera> gasolineras; // del propi viatge
-
-        // creadora
-        public Viaje(int idCamio) {
-            this.idCamio = idCamio;
-            this.gasolineras = new ArrayList<>();
-        }
-
-        // afegir gasolinera
-        public void addGasolinera(Gasolinera g) {
-            gasolineras.add(g);
-        }
-    }
 }
