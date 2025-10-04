@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Random;
+import java.util.Collections;
 
 public class GasolinaBoard {
     /* Class independent from AIMA classes
@@ -22,8 +24,6 @@ public class GasolinaBoard {
     // Centres i gasolineres (fixes, poden ser estàtiques per estalviar memòria)
     static List<Distribucion> camions;         // coord. dels centres de distribució (si un centre te multiples camions, les seves coords. apareixen repetides)
     static List<Gasolinera> gasolineras;       // coord. i peticions de cada gasolinera
-    static Matrix<Integer> distancias;         // Per cada centro, distancia a totes les gasolineres (nms calcular si menos a màxim km d’un viaje)
-    static Matrix<Map.Entry<Gasolinera, Integer>> distancia;       // Per cada centro, distancia a totes les gasolineres (nms calcular si menos a màxim km d’un viaje) ordenat de menor a major.
     
     // Assignació de peticions a viatges
     List<Viaje> viajes;  
@@ -35,7 +35,15 @@ public class GasolinaBoard {
 
     /* Constructor */
     public GasolinaBoard(int []init) {
-        
+        this(); // delegate to no-arg constructor
+        // optionally use init to set up board/configuration later
+    }
+
+    // no-arg constructor to initialize collections and control variables
+    public GasolinaBoard() {
+        viajes = new ArrayList<>();
+        beneficioActual = 0;
+        costeTotalKm = 0;
     }
 
     /* Operadors */
@@ -114,28 +122,41 @@ public class GasolinaBoard {
         }
     }
 
-    // Define the Viaje class
-    static class Viaje {
-        int idCamio;
-        List<Gasolinera> gasolineras; // del propi viatge
-
-        // creadora
-        public Viaje(int idCamio) {
-            this.idCamio = idCamio;
-            this.gasolineras = new ArrayList<>();
-        }
-
-        // afegir gasolinera
-        public void addGasolinera(Gasolinera g) {
-            gasolineras.add(g);
-        }
-    }
-
     // Initialize static variables
     static {
         camions = new ArrayList<>();
         gasolineras = new ArrayList<>();
-        distancias = new Matrix<>(0, 0); // Placeholder dimensions
-        distancia = new Matrix<>(0, 0); // Placeholder dimensions
+    }
+
+    // Generates a random initial solution for hill-climbing.
+    // Strategy: create one Viaje per camion (if any), shuffle gasolineras and assign each randomly to a camion's viaje.
+    public static GasolinaBoard randomInitialSolution() {
+        Random rnd = new Random();
+        GasolinaBoard b = new GasolinaBoard();
+
+        if (camions == null || camions.isEmpty()) {
+            // If there are no camions defined, create a single viaje and assign all gasolineras to it.
+            b.viajes.add(new Viaje(0));
+            if (gasolineras != null && !gasolineras.isEmpty()) {
+                List<Gasolinera> pool = new ArrayList<>(gasolineras);
+                Collections.shuffle(pool, rnd);
+                for (Gasolinera g : pool) b.viajes.get(0).addGasolinera(g);
+            }
+            return b;
+        }
+
+        int numCamions = camions.size();
+        for (int i = 0; i < numCamions; i++) b.viajes.add(new Viaje(i));
+
+        if (gasolineras != null && !gasolineras.isEmpty()) {
+            List<Gasolinera> pool = new ArrayList<>(gasolineras);
+            Collections.shuffle(pool, rnd);
+            for (Gasolinera g : pool) {
+                int r = rnd.nextInt(numCamions);
+                b.viajes.get(r).addGasolinera(g);
+            }
+        }
+
+        return b;
     }
 }
