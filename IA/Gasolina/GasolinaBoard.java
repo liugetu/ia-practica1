@@ -57,57 +57,6 @@ public class GasolinaBoard {
         return new int[0];
     }
 
-    // Define the Distribucion class
-    static class Distribucion {
-        // Example attributes for a distribution center
-        int id;
-        double x, y;
-
-        public Distribucion(int id, double x, double y) {
-            this.id = id;
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    // Define the Gasolinera class
-    static class Gasolinera {
-        int id;
-        double x, y;
-        int peticions;
-
-        public Gasolinera(int id, double x, double y, int peticions) {
-            this.id = id;
-            this.x = x;
-            this.y = y;
-            this.peticions = peticions;
-        }
-    }
-
-    // Define the Matrix class
-    static class Matrix<T> {
-        private List<List<T>> data;
-
-        public Matrix(int rows, int cols) {
-            data = new ArrayList<>();
-            for (int i = 0; i < rows; i++) {
-                List<T> row = new ArrayList<>();
-                for (int j = 0; j < cols; j++) {
-                    row.add(null);
-                }
-                data.add(row);
-            }
-        }
-
-        public void set(int row, int col, T value) {
-            data.get(row).set(col, value);
-        }
-
-        public T get(int row, int col) {
-            return data.get(row).get(col);
-        }
-    }
-    
     /*
     // Generates a random initial solution for hill-climbing.
     // Strategy: create one Viaje per camion (if any), shuffle gasolineras and assign each randomly to a camion's viaje.
