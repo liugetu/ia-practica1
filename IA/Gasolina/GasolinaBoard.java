@@ -32,6 +32,13 @@ public class GasolinaBoard {
         this.costeTotalKm = 0;
     }
 
+    // no-arg constructor for helper/factory methods
+    public GasolinaBoard() {
+        this.viajes = new ArrayList<>();
+        this.beneficioActual = 0;
+        this.costeTotalKm = 0;
+    }
+
     /* Operadors */
     /*public void flip_it(int i){
         // flip the coins i and i + 1
@@ -50,6 +57,10 @@ public class GasolinaBoard {
         return false;
     }
 
+    public double getKm() {
+        return costeTotalKm;
+    }
+
     // Some functions will be needed for creating a copy of the state
 
     public int [] getConfiguration() {
@@ -57,36 +68,21 @@ public class GasolinaBoard {
         return new int[0];
     }
 
-    /*
-    // Generates a random initial solution for hill-climbing.
+    
+    // genera una solucio inicial random
     // Strategy: create one Viaje per camion (if any), shuffle gasolineras and assign each randomly to a camion's viaje.
     public static GasolinaBoard randomInitialSolution() {
         Random rnd = new Random();
         GasolinaBoard b = new GasolinaBoard();
 
-        if (camions == null || camions.isEmpty()) {
-            // If there are no camions defined, create a single viaje and assign all gasolineras to it.
-            b.viajes.add(new Viaje(0));
-            if (gasolineras != null && !gasolineras.isEmpty()) {
-                List<Gasolinera> pool = new ArrayList<>(gasolineras);
-                Collections.shuffle(pool, rnd);
-                for (Gasolinera g : pool) b.viajes.get(0).addGasolinera(g);
-            }
-            return b;
-        }
+        // inicialitzar viatges de cada camio
+        for (int i = 0; i < camions.size(); i++) b.viajes.add(new Viaje(i));
 
-        int numCamions = camions.size();
-        for (int i = 0; i < numCamions; i++) b.viajes.add(new Viaje(i));
-
-        if (gasolineras != null && !gasolineras.isEmpty()) {
-            List<Gasolinera> pool = new ArrayList<>(gasolineras);
-            Collections.shuffle(pool, rnd);
-            for (Gasolinera g : pool) {
-                int r = rnd.nextInt(numCamions);
-                b.viajes.get(r).addGasolinera(g);
-            }
+        // recorrer todas las gasolineras
+        for (int i = 0; i < gasolineras.size(); i++) {
+            //gasolineras[i]
         }
 
         return b;
-    }*/
+    }
 }

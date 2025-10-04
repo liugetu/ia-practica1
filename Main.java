@@ -11,6 +11,8 @@ import aima.search.informed.IterativeDeepeningAStarSearch;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.ArrayList;
+import IA.Gasolina.Gasolinera;
 
 public class Main {
     public static void main(String[] args) throws Exception{
@@ -60,7 +62,7 @@ public class Main {
     // Define the Viaje class
     static class Viaje {
         int idCamio;
-        List<Gasolinera> gasolineras; // del propi viatge
+        ArrayList<Gasolinera> gasolineras; // del propi viatge
 
         // creadora
         public Viaje(int idCamio) {
