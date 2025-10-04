@@ -20,7 +20,7 @@ public class Main {
         // inicialitzar el problema.
         // ProbIA5Board board = new ProbIA5Board(prob, sol );
 
-        // Create the Problem object (canviar noms)
+        // Create the Problem object (canviar noms).
         /*Problem p = new  Problem(board,
                                 new ProbIA5SuccesorFunction(),
                                 new ProbIA5GoalTest(),
