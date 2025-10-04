@@ -127,7 +127,7 @@ public class GasolinaBoard {
         camions = new ArrayList<>();
         gasolineras = new ArrayList<>();
     }
-
+    /*
     // Generates a random initial solution for hill-climbing.
     // Strategy: create one Viaje per camion (if any), shuffle gasolineras and assign each randomly to a camion's viaje.
     public static GasolinaBoard randomInitialSolution() {
@@ -158,5 +158,5 @@ public class GasolinaBoard {
         }
 
         return b;
-    }
+    }*/
 }
