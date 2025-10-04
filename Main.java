@@ -17,7 +17,7 @@ public class Main {
         // generar estat inicial (aleatori/greedy)
         // definir un estat final?????? (en busqueda local fa falta?)
 
-        // inicialitzar el problema
+        // inicialitzar el problema.
         // ProbIA5Board board = new ProbIA5Board(prob, sol );
 
         // Create the Problem object (canviar noms)
