@@ -207,9 +207,11 @@ public class GasolinaBoard {
         return b;
     }
 
-    /* la que proposa el copilot:
-    public GasolinaBoard solIniGreedy(ArrayList<Gasolinera> gasolineras) {
+    public GasolinaBoard GasolinaBoardGreedy(ArrayList<Gasolinera> gasolineras) {
         GasolinaBoard board = new GasolinaBoard(camions, gasolineras);
+
+        // inicialitzar viatges per camio (buits)
+        for (int i = 0; i < camions.size(); i++) board.viajesPorCamion.get(i).clear();
 
         PriorityQueue<Pair<Pair<Integer, Integer>, Integer>> peticions = new PriorityQueue<Pair<Pair<Integer, Integer>, Integer>>(
             new Comparator<Pair<Pair<Integer, Integer>, Integer>>() {
@@ -221,67 +223,56 @@ public class GasolinaBoard {
             }
         );
 
-        // initialize queue with gasolineras that have petitions
-        for (int gi = 0; gi < gasolineras.size(); gi++) {
-            if (gasolineras.get(gi).getPeticiones() != null && gasolineras.get(gi).getPeticiones().size() > 0) {
-                Gasolinera g = gasolineras.get(gi);
-                peticions.add(new Pair<>(new Pair<>(g.getCoordX(), g.getCoordY()), gi));
-            }
+        for (int ig = 0; ig < gasolineras.size(); ig++) {
+            ArrayList<Integer> pets = gasolineras.get(ig).getPeticiones();
+            for (int ip = 0; ip < pets.size(); ip++) peticions.add(new Pair<>(new Pair<>(ig, ip), pets.get(ip)));
         }
 
-        // For each camio try to serve petitions while possible
-        for (int i = 0; i < camions.size() && peticions.size() > 0; ++i) {
-            boolean stop = false;
-            ArrayList<Viaje> trips = viajesPorCamion.get(i);
-            while (peticions.size() > 0 && !stop) {
-                Pair<Pair<Integer, Integer>, Integer> top = peticions.peek();
-                int idxGasTop = top.second;
+        // Inicializar km de cada viaje de los camiones a 0
+        board.kmsPorCamion = new int[camions.size()];
+        for (int i = 0; i < camions.size(); i++) board.kmsPorCamion[i] = 0;
 
-                int kmCurrent = kmsPorCamion[i];
+        for(int i = 0; i < camions.size() && peticions.size() > 0; ++i) {
+            boolean b = false;
+            while(peticions.size() > 0 && ! b) {
                 int km;
-
-                if (trips.isEmpty()) {
-                    // distance center->gas
-                    km = (distCentroGas != null && idxGasTop >= 0 && idxGasTop < distCentroGas[i].length)
-                        ? distCentroGas[i][idxGasTop]
-                        : getDistancia(gasolineras.get(idxGasTop), camions.get(i));
-                    if (km + kmCurrent <= 640) {
-                        Viaje nv = new Viaje();
-                        // use petition index 0 (first) for minimal change
-                        nv.addGasolinera(idxGasTop, km, 0);
-                        trips.add(nv);
+                if(kmsPorCamion[i] == 0) {
+                    km = Math.abs(camions.get(i).getCoordX() - gasolineras.get(peticions.peek().first.first).getCoordX()) + Math.abs(camions.get(i).getCoordY() - gasolineras.get(peticions.peek().first.first).getCoordY());
+                    if(km <= 640) {
+                        addGasolineraAViaje(peticions.peek().first.first, km, peticions.peek().first.second, i);
                         kmsPorCamion[i] += km;
                         peticions.poll();
-                    } else stop = true;
-                } else {
-                    Viaje last = trips.get(trips.size() - 1);
-                    Gasolinera lastG = last.getLastGasolinera();
-                    if (lastG == null) {
-                        km = (distCentroGas != null && idxGasTop >= 0 && idxGasTop < distCentroGas[i].length)
-                            ? distCentroGas[i][idxGasTop]
-                            : getDistancia(gasolineras.get(idxGasTop), camions.get(i));
-                    } else {
-                        km = getDistancia(lastG, gasolineras.get(idxGasTop));
                     }
-
-                    if (km + kmCurrent <= 640 && last.gasCount < 2) {
-                        last.addGasolinera(idxGasTop, km, 0);
-                        kmsPorCamion[i] += km;
-                        peticions.poll();
-                    } else {
-                        if (trips.size() < 5 && kmCurrent + km <= 640) {
-                            Viaje nv = new Viaje();
-                            nv.addGasolinera(idxGasTop, km, 0);
-                            trips.add(nv);
+                    else b = true;
+                }
+                else {
+                    if(viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).exit()) {
+                        int coord_x = viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getLastGasolinera().getCoordX();
+                        int coord_y = viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getLastGasolinera().getCoordY();
+                        km = Math.abs(coord_x - gasolineras.get(peticions.peek().first.first).getCoordX()) + Math.abs(coord_y - gasolineras.get(peticions.peek().first.first).getCoordY());
+                        if(viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).addGasolinera(peticions.peek().first.first, km, peticions.peek().first.second)) {
                             kmsPorCamion[i] += km;
                             peticions.poll();
-                        } else stop = true;
+                        }
+                        else b = true;
+                    }
+                    else {
+                        int igIdx = peticions.peek().first.first;
+                        int ipIdx = peticions.peek().first.second;
+                        km = Math.abs(camions.get(i).getCoordX() - gasolineras.get(igIdx).getCoordX()) + Math.abs(camions.get(i).getCoordY() - gasolineras.get(igIdx).getCoordY());
+                        int km_back = Math.abs(camions.get(i).getCoordX() - viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getLastGasolinera().getCoordX()) + Math.abs(camions.get(i).getCoordY() - viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getLastGasolinera().getCoordY());
+                        if(km + km_back + kmsPorCamion[i] <= 640) {
+                            addGasolineraAViaje(igIdx, km, ipIdx, i);
+                            kmsPorCamion[i] += km + km_back;
+                            peticions.poll();
+                        }
+                        else b = true;
                     }
                 }
             }
         }
         return board;
-    }*/
+    }
 
     // helpers per viajesPorCamion
 
@@ -347,6 +338,10 @@ public class GasolinaBoard {
                 kmRecorridos -= km;
                 if (kmRecorridos < 0) kmRecorridos = 0;
             }
+        }
+
+        public boolean exit() {
+            return gasCount < 2;
         }
     }
 }
