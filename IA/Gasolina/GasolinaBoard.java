@@ -28,6 +28,14 @@ public class GasolinaBoard {
        - It has to implement the state of the problem and its operators
     */
 
+    /* Constants */
+    public static final int limitKmCamioDiari = 640;
+    public static final int limitViatgesCamio = 5;
+    public static final double valorDeposito = 1000.0;
+    public static final double costePorKm = 2.0;
+
+    /* Atributs */
+
     // Centres i gasolineres (fixes, poden ser estàtiques per estalviar memòria)
     static ArrayList<Distribucion> camions;         // coord. dels centres de distribució (si un centre te multiples camions, les seves coords. apareixen repetides)
     static ArrayList<Gasolinera> gasolineras;       // coord. i peticions de cada gasolinera
@@ -37,14 +45,16 @@ public class GasolinaBoard {
 
     // distancies precalculades de centre a gasolinera
     static int[][] distCentroGas;
+    // distancies precalculades entre gasolineres (simetrica)
+    static int[][] distGasGas;
 
     // Assignació de peticions a viatges per camió
     ArrayList<ArrayList<Viaje>> viajesPorCamion;  // index exterior = idCamio
     int[] kmsPorCamion;  // els kms que ha fet cada camio (total dels seus viatges)
 
     // Informació de control
-    double beneficioActual; // V = 1000*p(d) - 2*2*d(c,g) - 1000*p(d+1)
-    double costeTotalKm;
+    double beneficioActual; // V = beneficis per pet ateses - costos kms camions - perdues pet no ateses
+    double costeTotalKm; // total km de tots els viatges
 
     /* Constructor */
     public GasolinaBoard(ArrayList<Distribucion> camions, ArrayList<Gasolinera> gasolineras) {
@@ -76,9 +86,18 @@ public class GasolinaBoard {
         int nCentres = camions.size();
         int nGas = gasolineras.size();
         distCentroGas = new int[nCentres][nGas];
+        distGasGas = new int[nGas][nGas];
         for (int i = 0; i < nCentres; i++) {
             for (int g = 0; g < nGas; g++) {
                 distCentroGas[i][g] = getDistancia(this.gasolineras.get(g), this.camions.get(i));
+            }
+        }
+        // precomputar diestancies entre gasolineres
+        for (int a = 0; a < nGas; a++) {
+            for (int b = a; b < nGas; b++) {
+                int d = getDistancia(this.gasolineras.get(a), this.gasolineras.get(b));
+                distGasGas[a][b] = d;
+                distGasGas[b][a] = d;
             }
         }
     }
@@ -172,6 +191,24 @@ public class GasolinaBoard {
         return x + y;
     }
 
+    // retorna el preu d'un diposit d'una peticio que porta diesPnd dies pendent
+    // pre: diesPnd >= 0
+    public double getPreuDiposit(int diesPnd) {
+        if (diesPnd == 0) return 1.02 * valorDeposito;
+        else {
+            double percentatge = (100.0 - Math.pow(2, diesPnd))/100.0;
+            return percentatge * valorDeposito;
+        }
+    }
+
+    // calcul de la perdua de beneficis per no atendre la peticio el dia actual, sino el dia seguent
+    // pre: diesPnd >= 0
+    public double calcPerdida(int diasPnd) {
+        double beneficiAvui = getPreuDiposit(diasPnd);
+        double beneficiDema = getPreuDiposit(diasPnd + 1);
+        return (beneficiAvui - beneficiDema);
+    }
+
     // afegir una gasolinera a un nou viatge d'un camio
     public void addGasolineraAViaje(int igas, int km, int ipet, int icam) {
         Viaje nv = new Viaje();
@@ -180,6 +217,33 @@ public class GasolinaBoard {
         viajesCamion.add(nv);
         kmsPorCamion[icam] += km;
     }
+
+    // actualitzar beneficis i kms total quan s'aten una peticio
+    // pre: igas i ipet son indexs valids
+    public void registrarPeticioAtesa(int igas, int ipet, int kmAfegits) {
+        ArrayList<Integer> pets = gasolineras.get(igas).getPeticiones();
+        int diesPend = pets.get(ipet);
+        double ingres = getPreuDiposit(diesPend);
+        double costeViaje = kmAfegits * costePorKm;
+        this.beneficioActual += ingres - costeViaje;
+        this.costeTotalKm += kmAfegits;
+    }
+
+    // penalitzar les peticions no ateses avui (despres d'haver assignat els viatges)
+    public void penalitzarPeticionsNoAteses() {
+        for (int gi = 0; gi < gasolineras.size(); gi++) {
+            boolean[] flags = gasolineras_info.get(gi).second;
+            ArrayList<Integer> pets = gasolineras.get(gi).getPeticiones();
+            for (int ip = 0; ip < pets.size(); ip++) {
+                if (!flags[ip]) {  // no atesa
+                    int diesPend = pets.get(ip);
+                    this.beneficioActual -= calcPerdida(diesPend);
+                }
+            }
+        }
+    }
+
+    /* Solucions inicials */
     
     // genera una solucio inicial random
     public GasolinaBoard solIniRandom() {
@@ -218,26 +282,29 @@ public class GasolinaBoard {
                 if (viajesAsignadas.isEmpty()) {
                     kmNew = distCentroGas[ig][c];
 
-                    if (kmNew + kmCurrent <= 640) {  // limit kms diari
+                    if (kmNew + kmCurrent <= limitKmCamioDiari) {  // limit kms diari
                         addGasolineraAViaje(ig, kmNew, ip, c);
+                        b.registrarPeticioAtesa(ig, ip, kmNew);
                         assignada = true;
                     }
                 } 
                 else {
                     // distancia entre la gasolinera de l'ultim viatge i la nova
                     Viaje lastViaje = viajesAsignadas.get(viajesAsignadas.size() - 1);
-                    Gasolinera lastGas = lastViaje.getLastGasolinera();
-                    kmNew = getDistancia(lastGas, gasolineras.get(ig));
+                    int lastIdx = lastViaje.getIndexLastGas();
+                    kmNew = distGasGas[lastIdx][ig];
 
-                    if (kmNew + kmCurrent <= 640 && lastViaje.gasCount < 2) {
+                    if (kmNew + kmCurrent <= limitKmCamioDiari && lastViaje.gasCount < 2) {
                         // afegir la parada al mateix viatge
                         lastViaje.addGasolinera(ig, kmNew, ip);
                         kmsPorCamion[c] += kmNew;
+                        b.registrarPeticioAtesa(ig, ip, kmNew);
                         assignada = true;
                     } 
-                    else if (viajesAsignadas.size() < 5 && kmNew + kmCurrent <= 640) {
+                    else if (viajesAsignadas.size() < limitViatgesCamio && kmNew + kmCurrent <= limitKmCamioDiari) {
                         // crear un nou viatge per aquest camio
                         addGasolineraAViaje(ig, kmNew, ip, c);
+                        b.registrarPeticioAtesa(ig, ip, kmNew);
                         assignada = true;
                     }
                 }
@@ -245,10 +312,14 @@ public class GasolinaBoard {
             // si no assignada, no s'aten aquesta peticio
         }
 
+        // penalitzar les peticions que han quedat sense atendre avui (perdues d'un dia)
+        b.penalitzarPeticionsNoAteses();
+
         return b;
     }
 
-    public GasolinaBoard GasolinaBoardGreedy(ArrayList<Gasolinera> gasolineras) {
+    // genera una solucio inicial greedy
+    public GasolinaBoard solIniGreedy(ArrayList<Gasolinera> gasolineras) {
         GasolinaBoard board = new GasolinaBoard(camions, gasolineras);
 
         // inicialitzar viatges per camio (buits)
@@ -279,7 +350,7 @@ public class GasolinaBoard {
                 int km;
                 if(kmsPorCamion[i] == 0) {
                     km = Math.abs(camions.get(i).getCoordX() - gasolineras.get(peticions.peek().first.first).getCoordX()) + Math.abs(camions.get(i).getCoordY() - gasolineras.get(peticions.peek().first.first).getCoordY());
-                    if(km <= 640) {
+                    if(km <= limitKmCamioDiari) {
                         addGasolineraAViaje(peticions.peek().first.first, km, peticions.peek().first.second, i);
                         kmsPorCamion[i] += km;
                         peticions.poll();
@@ -302,7 +373,7 @@ public class GasolinaBoard {
                         int ipIdx = peticions.peek().first.second;
                         km = Math.abs(camions.get(i).getCoordX() - gasolineras.get(igIdx).getCoordX()) + Math.abs(camions.get(i).getCoordY() - gasolineras.get(igIdx).getCoordY());
                         int km_back = Math.abs(camions.get(i).getCoordX() - viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getLastGasolinera().getCoordX()) + Math.abs(camions.get(i).getCoordY() - viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getLastGasolinera().getCoordY());
-                        if(km + km_back + kmsPorCamion[i] <= 640) {
+                        if(km + km_back + kmsPorCamion[i] <= limitKmCamioDiari) {
                             addGasolineraAViaje(igIdx, km, ipIdx, i);
                             kmsPorCamion[i] += km + km_back;
                             peticions.poll();
@@ -354,11 +425,17 @@ public class GasolinaBoard {
             return kmRecorridos;
         }
 
-        // retornar l'ultima gasolinera (null si no n'hi ha)
+        // retorna l'ultima gasolinera (null si no n'hi ha)
         public Gasolinera getLastGasolinera() {
             if (gasCount == 0) return null;
             int idx = gasVisitadas[gasCount - 1];
             return GasolinaBoard.gasolineras.get(idx);
+        }
+
+        // retorna l'index de l'ultima gasolinera (-1 si no n'hi ha)
+        public int getIndexLastGas() {
+            if (gasCount == 0) return -1;
+            return gasVisitadas[gasCount - 1];
         }
 
         // treure una gasolinera del viatge
