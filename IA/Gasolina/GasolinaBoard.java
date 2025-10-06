@@ -110,7 +110,7 @@ public class GasolinaBoard {
         v.addGasolinera(igas, km, ipet);
         kmsPorCamion[icam] += km;
         costeTotalKm += km; /////////////////////////// VARIABLE "DIFICIL" DE CALCULAR: TENIM EN COMPTE LA TORNADA O NO? //////////////////////////////
-        beneficioActual += 1000 * (100 - Math.pow(2, (double)g.getPeticiones()[ipet])) - 4*km - (1000 * (100 - Math.pow(2, (double)g.getPeticiones()[ipet])) - 1000 * (100 - Math.pow(2, (double)g.getPeticiones()[ipet] + 1)));
+        beneficioActual += 1000 * (100 - Math.pow(2, (double)g.getPeticiones().get(ipet))) - 4*km - (1000 * (100 - Math.pow(2, (double)g.getPeticiones().get(ipet))) - 1000 * (100 - Math.pow(2, (double)g.getPeticiones().get(ipet) + 1)));
     }
 
     /* 
