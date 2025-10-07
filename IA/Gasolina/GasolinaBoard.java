@@ -355,6 +355,7 @@ public class GasolinaBoard {
                     if(km <= limitKmCamioDiari) {
                         addGasolineraAViaje(peticions.peek().first.first, km, peticions.peek().first.second, i);
                         kmsPorCamion[i] += km;
+                        registrarPeticioAtesa(peticions.peek().first.first, peticions.peek().first.second, km);
                         peticions.poll();
                     }
                     else b = true;
@@ -366,6 +367,7 @@ public class GasolinaBoard {
                         km = Math.abs(coord_x - gasolineras.get(peticions.peek().first.first).getCoordX()) + Math.abs(coord_y - gasolineras.get(peticions.peek().first.first).getCoordY());
                         if(viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).addGasolinera(peticions.peek().first.first, km, peticions.peek().first.second)) {
                             kmsPorCamion[i] += km;
+                            registrarPeticioAtesa(peticions.peek().first.first, peticions.peek().first.second, km);
                             peticions.poll();
                         }
                         else b = true;
@@ -378,6 +380,7 @@ public class GasolinaBoard {
                         if(km + km_back + kmsPorCamion[i] <= limitKmCamioDiari) {
                             addGasolineraAViaje(igIdx, km, ipIdx, i);
                             kmsPorCamion[i] += km + km_back;
+                            registrarPeticioAtesa(igIdx, ipIdx, km + km_back);
                             peticions.poll();
                         }
                         else b = true;
@@ -385,6 +388,7 @@ public class GasolinaBoard {
                 }
             }
         }
+        board.penalitzarPeticionsNoAteses();
         return board;
     }
 
