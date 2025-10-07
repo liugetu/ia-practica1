@@ -173,9 +173,9 @@ public class GasolinaBoard {
             int kmActuals = 2*distCentroGas[icam][igas];
             kmEliminats = kmOriginal1 - kmActuals;
         }
-        v.sumaKm(-kmEliminats);   // actualitzar kms que ha fet el camio 1 en aquest viatge
+        v.sumaKm(-kmEliminats);            // actualitzar kms que ha fet el camio 1 en aquest viatge
         kmsPorCamion[icam] -= kmEliminats; // actualitzar kms que ha fet el camio 1 en total
-        costeTotalKm -= kmEliminats;        // actualitzar kms totals
+        costeTotalKm -= kmEliminats;       // actualitzar kms totals
     }
 
     // reassignar una peticio d'un viatge a un altre viatge iviaje del camio icam
@@ -189,8 +189,10 @@ public class GasolinaBoard {
         // eliminar la peticio del viaje original
         removeGasolineraViaje(v1, icam1, igas1, ipet1);
         // OJO: aqui no fa falta modificar beneficis pq la peticio nomes es transfereix     
+
+        // afegir la peticio al nou viatge
         
-        // no acabat
+        // pnd
     }
 
     /* Heuristic function */
@@ -319,6 +321,7 @@ public class GasolinaBoard {
 
                     if (kmNew + kmCurrent <= limitKmCamioDiari) {  // limit kms diari
                         addGasolineraAViaje(ig, kmNew, ip, c);
+                        registrarPeticioAtesa(ig, ip, kmNew);
                         assignada = true;
                     }
                 } 
@@ -331,12 +334,14 @@ public class GasolinaBoard {
                     if (kmNew + kmCurrent <= limitKmCamioDiari && lastViaje.gasCount < 2) {
                         // afegir la parada al mateix viatge
                         lastViaje.addGasolinera(ig, kmNew, ip);
+                        registrarPeticioAtesa(ig, ip, kmNew);
                         kmsPorCamion[c] += kmNew;
                         assignada = true;
                     } 
                     else if (viajesAsignadas.size() < limitViatgesCamio && kmNew + kmCurrent <= limitKmCamioDiari) {
                         // crear un nou viatge per aquest camio
                         addGasolineraAViaje(ig, kmNew, ip, c);
+                        registrarPeticioAtesa(ig, ip, kmNew); // actualitzar beneficis i kms
                         assignada = true;
                     }
                 }
@@ -457,7 +462,6 @@ public class GasolinaBoard {
             gasCount++;
             gasolineras_info.get(g).second[ipeticion] = true;
             kmRecorridos += km;
-            GasolinaBoard.this.registrarPeticioAtesa(g, ipeticion, km); // actualitzar beneficis i kms
             return true;
         }
 
