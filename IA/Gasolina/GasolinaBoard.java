@@ -160,7 +160,8 @@ public class GasolinaBoard {
 
     // metode auxiliar per treure la gasolinera igas del viatge v del camio icam
     // NO actualitza els beneficis!
-    public void removeGasolineraViaje(Viaje v, int icam, int igas, int ipet) {
+    public void removeGasolineraViaje(int iviaje, int icam, int igas, int ipet) {
+        Viaje v = viajesPorCamion.get(icam).get(iviaje);
         int kmOriginal1 = v.getKmRecorridos();
         if (!v.removeGasolinera(igas, ipet)) return; // error!
 
@@ -168,6 +169,7 @@ public class GasolinaBoard {
         if (v.getNGasolineras() == 0) {  
             // v no te mes gasolineres a visitar, es treu tot: km = anada + tornada d'abans
             kmEliminats = kmOriginal1; //distancia que tenia
+            viajesPorCamion.get(icam).remove(iviaje); // eliminar viatge
         }
         else {  // li queda 1 gasolinera: km = (kms que tenia) - (kms d'ara amb 1 viatge)
             int kmActuals = 2*distCentroGas[icam][igas];
@@ -178,21 +180,63 @@ public class GasolinaBoard {
         costeTotalKm -= kmEliminats;       // actualitzar kms totals
     }
 
-    // reassignar una peticio d'un viatge a un altre viatge iviaje del camio icam
-    public void reasignar(int icam1, int iviaje1, int igas1, int ipet1, int icam2, int iviaje2) {
-        // comprovar que la gasolinera igas1 conte la peticio ipet1
-        if ((gasolineras_info.get(igas1).second).length > ipet1) return;
-
-        Viaje v1 = viajesPorCamion.get(icam1).get(iviaje1);
-        Viaje v2 = viajesPorCamion.get(icam2).get(iviaje2);
+    // reassignar una peticio d'un viatge a un altre viatge del camio icam
+    public void reasignar(int icam1, int iviaje1, int igas, int ipet, int icam2) {
+        // comprovar que la gasolinera igas conte la peticio ipet
+        if ((gasolineras_info.get(igas).second).length > ipet) return;
 
         // eliminar la peticio del viaje original
-        removeGasolineraViaje(v1, icam1, igas1, ipet1);
+        removeGasolineraViaje(iviaje1, icam1, igas, ipet);
         // OJO: aqui no fa falta modificar beneficis pq la peticio nomes es transfereix     
 
-        // afegir la peticio al nou viatge
+        // afegir la peticio ipet de la gasolina igas al camio icam2
+        ArrayList<Viaje> viajesAsignadas = viajesPorCamion.get(icam2);
+        int kmCurrent = kmsPorCamion[icam2];
+        int kmNew;
+        boolean assignada = false;
+
+        if (viajesAsignadas.isEmpty()) {
+            kmNew = 2*distCentroGas[igas][icam2];
+
+            if (kmNew <= limitKmCamioDiari) {  // limit kms diari
+                addGasolineraAViaje(igas, kmNew, ipet, icam2);
+                // actualitzar kms
+                assignada = true;
+            }
+        } 
+        else {
+            // recorrem pels seus viatges existents per veure si es pot afegir a algun
+            int nViajes= viajesAsignadas.size();
+            for (int iv = 0; iv < nViajes; iv++) {
+                Viaje v = viajesAsignadas.get(iv);
+                int lastGas = v.getIndexLastGas();
+                if (v.getNGasolineras() == 1) {     // s'assumeix que si no hi ha cap gasolinera, no existiria el viatge
+                    // distancia recorreguda si s'afageix la nova parada
+                    //kmNew = dist[]
+                }
+            }
+            // no acabat
+            /*// distancia entre la gasolinera de l'ultim viatge i la nova
+            Viaje lastViaje = viajesAsignadas.get(viajesAsignadas.size() - 1);
+            int lastIdx = lastViaje.getIndexLastGas();
+            kmNew = distGasGas[lastIdx][ig];
+
+            if (kmNew + kmCurrent <= limitKmCamioDiari && lastViaje.gasCount < 2) {
+                // afegir la parada al mateix viatge
+                lastViaje.addGasolinera(ig, kmNew, ip);
+                // actualitzar kms
+                kmsPorCamion[icam] += kmNew;
+                assignada = true;
+            } 
+            else if (viajesAsignadas.size() < limitViatgesCamio && kmNew + kmCurrent <= limitKmCamioDiari) {
+                // crear un nou viatge per aquest camio
+                addGasolineraAViaje(ig, kmNew, ip, icam);
+                // actualitzar kms
+                assignada = true;
+            }*/
+        }
         
-        // pnd
+        
     }
 
     /* Heuristic function */
@@ -317,9 +361,9 @@ public class GasolinaBoard {
                 int kmNew;
 
                 if (viajesAsignadas.isEmpty()) {
-                    kmNew = distCentroGas[ig][c];
+                    kmNew = 2*distCentroGas[ig][c]; // anada i tornada!
 
-                    if (kmNew + kmCurrent <= limitKmCamioDiari) {  // limit kms diari
+                    if (kmNew <= limitKmCamioDiari) {  // limit kms diari
                         addGasolineraAViaje(ig, kmNew, ip, c);
                         registrarPeticioAtesa(ig, ip, kmNew);
                         assignada = true;
@@ -330,7 +374,7 @@ public class GasolinaBoard {
                     Viaje lastViaje = viajesAsignadas.get(viajesAsignadas.size() - 1);
                     int lastIdx = lastViaje.getIndexLastGas();
                     kmNew = distGasGas[lastIdx][ig];
-
+                    /////////////  PND: NO HE TINGUT ELS KM DE TORNADA
                     if (kmNew + kmCurrent <= limitKmCamioDiari && lastViaje.gasCount < 2) {
                         // afegir la parada al mateix viatge
                         lastViaje.addGasolinera(ig, kmNew, ip);
