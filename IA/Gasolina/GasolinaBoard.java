@@ -54,7 +54,7 @@ public class GasolinaBoard {
 
     // Informació de control
     double beneficioActual; // V = beneficis per pet ateses - costos kms camions - perdues pet no ateses
-    double costeTotalKm; // total km de tots els viatges
+    int costeTotalKm; // total km de tots els viatges
 
     /* Constructor */
     public GasolinaBoard(ArrayList<Distribucion> camions, ArrayList<Gasolinera> gasolineras) {
@@ -158,10 +158,40 @@ public class GasolinaBoard {
         costeTotalKm = costeTotalKm - kmActuals + kmNuevos;
     }
 
-    // reassignar una peticio a al viatge iviaje del camio icam
-    /*public void reasignar(int icam1, int iviaje1, int int icam, int iviaje, ...) {
+    // metode auxiliar per treure la gasolinera igas del viatge v del camio icam
+    // NO actualitza els beneficis!
+    public void removeGasolineraViaje(Viaje v, int icam, int igas, int ipet) {
+        int kmOriginal1 = v.getKmRecorridos();
+        if (!v.removeGasolinera(igas, ipet)) return; // error!
 
-    }*/
+        int kmEliminats;
+        if (v.getNGasolineras() == 0) {  
+            // v no te mes gasolineres a visitar, es treu tot: km = anada + tornada d'abans
+            kmEliminats = kmOriginal1; //distancia que tenia
+        }
+        else {  // li queda 1 gasolinera: km = (kms que tenia) - (kms d'ara amb 1 viatge)
+            int kmActuals = 2*distCentroGas[icam][igas];
+            kmEliminats = kmOriginal1 - kmActuals;
+        }
+        v.sumaKm(-kmEliminats);   // actualitzar kms que ha fet el camio 1 en aquest viatge
+        kmsPorCamion[icam] -= kmEliminats; // actualitzar kms que ha fet el camio 1 en total
+        costeTotalKm -= kmEliminats;        // actualitzar kms totals
+    }
+
+    // reassignar una peticio d'un viatge a un altre viatge iviaje del camio icam
+    public void reasignar(int icam1, int iviaje1, int igas1, int ipet1, int icam2, int iviaje2) {
+        // comprovar que la gasolinera igas1 conte la peticio ipet1
+        if ((gasolineras_info.get(igas1).second).length > ipet1) return;
+
+        Viaje v1 = viajesPorCamion.get(icam1).get(iviaje1);
+        Viaje v2 = viajesPorCamion.get(icam2).get(iviaje2);
+
+        // eliminar la peticio del viaje original
+        removeGasolineraViaje(v1, icam1, igas1, ipet1);
+        // OJO: aqui no fa falta modificar beneficis pq la peticio nomes es transfereix     
+        
+        // no acabat
+    }
 
     /* Heuristic function */
     public double heuristic(){
@@ -173,7 +203,7 @@ public class GasolinaBoard {
         return false;
     }
 
-    public double getKm() {
+    public int getKm() {
         return costeTotalKm;
     }
 
@@ -436,6 +466,11 @@ public class GasolinaBoard {
             return kmRecorridos;
         }
 
+        // retorna el nombre de parades
+        public int getNGasolineras() {
+            return gasCount;
+        }
+
         // retorna l'ultima gasolinera (null si no n'hi ha)
         public Gasolinera getLastGasolinera() {
             if (gasCount == 0) return null;
@@ -467,9 +502,15 @@ public class GasolinaBoard {
             return petVisitadas[0];
         }
 
-        // treure una gasolinera del viatge
+        // pre: km pot ser negatiu
+        public void sumaKm (int km) {
+            kmRecorridos += km;
+            if (kmRecorridos < 0) kmRecorridos = 0; // control
+        }
+
+        // treure una peticio d'una gasolinera del viatge
         // no oblidar fer kmsPorCamion[idCamio] -= km; !!
-        public void removeGasolinera(int g, int km, int ipeticion) {
+        public boolean removeGasolinera(int g, int ipeticion) {
             int pos = -1;  // posicio de la gas i pet (o 0 o 1)
             for (int i = 0; i < gasCount; i++) {
                 if (gasVisitadas[i] == g) { 
@@ -478,6 +519,8 @@ public class GasolinaBoard {
                 }
             }
             if (pos >= 0) {  // trobat
+                // comprovar que petVisitadas[pos] coincideix amb ipeticion
+                if (petVisitadas[pos] != ipeticion) return false;
                 for (int j = pos; j < gasCount - 1; j++) {  // shift left arrays de gas i pet
                     gasVisitadas[j] = gasVisitadas[j+1];
                     petVisitadas[j] = petVisitadas[j+1];
@@ -486,9 +529,9 @@ public class GasolinaBoard {
                 petVisitadas[gasCount - 1] = -1;
                 gasCount--;
                 gasolineras_info.get(g).second[ipeticion] = false;
-                kmRecorridos -= km;
-                if (kmRecorridos < 0) kmRecorridos = 0;
+                return true;
             }
+            else return false;
         }
 
         public boolean exit() {
