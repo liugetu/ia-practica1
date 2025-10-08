@@ -431,9 +431,10 @@ public class GasolinaBoard {
                 int km;
                 if(kmsPorCamion[i] == 0) {
                     km = distCentroGas[i][peticions.peek().first.first];
-                    if(km <= 640) {
+                    if(km <= limitKmCamioDiari) {
                         addGasolineraAViaje(peticions.peek().first.first, km, peticions.peek().first.second, i);
                         kmsPorCamion[i] += km;
+                        registrarPeticioAtesa(peticions.peek().first.first, peticions.peek().first.second, km);
                         peticions.poll();
                     }
                     else b = true;
@@ -442,9 +443,10 @@ public class GasolinaBoard {
                     if(viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).exit()) {
                         km = distGasGas[viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getIndexLastGas()][peticions.peek().first.first];
                         int km_back = distCentroGas[i][peticions.peek().first.first];
-                        if(km + km_back + kmsPorCamion[i] <= 640) {
+                        if(km + km_back + kmsPorCamion[i] <= limitKmCamioDiari) {
                             viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).addGasolinera(peticions.peek().first.first, km + km_back, peticions.peek().first.second);
                             kmsPorCamion[i] += km + km_back;
+                            registrarPeticioAtesa(peticions.peek().first.first, peticions.peek().first.second, km);
                             peticions.poll();
                         }
                         else b = true;
@@ -453,9 +455,10 @@ public class GasolinaBoard {
                         int igIdx = peticions.peek().first.first;
                         int ipIdx = peticions.peek().first.second;
                         km = distCentroGas[i][igIdx];
-                        if(km + kmsPorCamion[i] <= 640) {
+                        if(km + kmsPorCamion[i] <= limitKmCamioDiari) {
                             addGasolineraAViaje(igIdx, km, ipIdx, i);
                             kmsPorCamion[i] += km;
+                            registrarPeticioAtesa(igIdx, ipIdx, km);
                             peticions.poll();
                         }
                         else b = true;
@@ -463,6 +466,7 @@ public class GasolinaBoard {
                 }
             }
         }
+        board.penalitzarPeticionsNoAteses();
         return board;
     }
 
@@ -640,7 +644,7 @@ public class GasolinaBoard {
             if(gasCount == 1) {
                 int km_old = distCentroGas[c][gasVisitadas[0]];
                 int km_new = distCentroGas[c][g];
-                if(kmRecorridos - km_old + km_new <= 640) return true;
+                if(kmRecorridos - km_old + km_new <= limitKmCamioDiari) return true;
                 else return false;
             }
             else {
@@ -648,7 +652,7 @@ public class GasolinaBoard {
                 int km_come_new = distCentroGas[c][g];
                 int km_next_old = distGasGas[gasVisitadas[0]][gasVisitadas[1]];
                 int km_next_new = distGasGas[g][gasVisitadas[1]];
-                if(kmRecorridos - km_come_old - km_next_old + km_come_new + km_next_new <= 640) return true;
+                if(kmRecorridos - km_come_old - km_next_old + km_come_new + km_next_new <= limitKmCamioDiari) return true;
                 else return false;
             }
         }
@@ -660,7 +664,7 @@ public class GasolinaBoard {
                 int km_back_new = distCentroGas[c][g];
                 int km_prev_old = distGasGas[gasVisitadas[0]][gasVisitadas[1]];
                 int km_prev_new = distGasGas[gasVisitadas[0]][g];
-                if(kmRecorridos - km_back_old - km_prev_old + km_back_new + km_prev_new <= 640) return true;
+                if(kmRecorridos - km_back_old - km_prev_old + km_back_new + km_prev_new <= limitKmCamioDiari) return true;
                 else return false;
             }
         }
