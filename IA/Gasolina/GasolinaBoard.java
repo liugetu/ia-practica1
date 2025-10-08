@@ -443,7 +443,7 @@ public class GasolinaBoard {
                         km = distGasGas[viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).getIndexLastGas()][peticions.peek().first.first];
                         int km_back = distCentroGas[i][peticions.peek().first.first];
                         if(km + km_back + kmsPorCamion[i] <= 640) {
-                            viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).addGasolinera(peticions.peek().first.first, km + km_back, peticions.peek().first.second)
+                            viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1).addGasolinera(peticions.peek().first.first, km + km_back, peticions.peek().first.second);
                             kmsPorCamion[i] += km + km_back;
                             peticions.poll();
                         }
@@ -682,7 +682,7 @@ public class GasolinaBoard {
             }
         }
 
-        public boolean swap_last(int g, int c) {
+        public void swap_last(int g, int c) {
             int km_back_old = distCentroGas[c][gasVisitadas[1]];
             int km_back_new = distCentroGas[c][g];
             int km_prev_old = distGasGas[gasVisitadas[0]][gasVisitadas[1]];
