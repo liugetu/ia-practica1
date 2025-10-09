@@ -127,6 +127,9 @@ public class GasolinaBoard {
             km = getDistancia(g, camions.get(icam)) + getDistancia(g, lastGas) + getDistancia(lastGas, camions.get(icam));
         }
         v.addGasolinera(igas, km, ipet);
+
+        // Actualitzar estat
+        viajesPorCamion.get(icam).set(iviaje, v);
         kmsPorCamion[icam] += km;
         costeTotalKm += km; /////////////////////////// VARIABLE "DIFICIL" DE CALCULAR: TENIM EN COMPTE LA TORNADA O NO? //////////////////////////////
         beneficioActual += 1000 * (100 - Math.pow(2, (double)g.getPeticiones().get(ipet))) - 4*km - (1000 * (100 - Math.pow(2, (double)g.getPeticiones().get(ipet))) - 1000 * (100 - Math.pow(2, (double)g.getPeticiones().get(ipet) + 1)));
@@ -152,7 +155,8 @@ public class GasolinaBoard {
         
         int kmNuevos = getDistancia(gas1, camions.get(icam)) + getDistancia(gas1, gas2) + getDistancia(gas2, camions.get(icam));
         
-        // Actualizar estado
+        // Actualizar estat
+        viajesPorCamion.get(icam).set(iviaje, v);
         v.kmRecorridos = kmNuevos;
         kmsPorCamion[icam] = kmsPorCamion[icam] - kmActuals + kmNuevos;
         costeTotalKm = costeTotalKm - kmActuals + kmNuevos;
