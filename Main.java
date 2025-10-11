@@ -1,7 +1,8 @@
-import IA.Gasolina.*;
-//import IA.ProbIA5.ProbIA5GoalTest;
-//import IA.ProbIA5.ProbIA5HeuristicFunction;
-//import IA.ProbIA5.ProbIA5SuccesorFunction;
+import IA.Gasolina.GasolinaBoard;
+import IA.Gasolina.GasolinaGoalTest;
+import IA.Gasolina.GasolinaHeuristicFunction;
+import IA.Gasolina.GasolinaSuccessorFunction;
+
 import aima.search.framework.GraphSearch;
 import aima.search.framework.Problem;
 import aima.search.framework.Search;
