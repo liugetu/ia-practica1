@@ -232,6 +232,10 @@ public class GasolinaBoard {
         return false;
     }
 
+    public double getBeneficio() {
+        return beneficioActual;
+    }
+
     public int getKm() {
         return costeTotalKm;
     }
