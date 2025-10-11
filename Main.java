@@ -22,7 +22,7 @@ public class Main {
         // inicialitzar el problema.
         int ngas = 20;
         int ncen = 5, mult = 1;
-        GasolinaBoard board = new GasolinaBoard(CentrosDistribucion(ncen, mult, 3), Gasolineras(ngas, 5));
+        //GasolinaBoard board = new GasolinaBoard(CentrosDistribucion(ncen, mult, 3), Gasolineras(ngas, 5));
 
         // Create the Problem object (canviar noms).
         /*Problem p = new  Problem(board,

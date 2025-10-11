@@ -232,6 +232,25 @@ public class GasolinaBoard {
         return false;
     }
 
+    public int getNCamions() {
+        return camions.size();
+    }
+
+    public int getNViajesCamion(int icam) {
+        return viajesPorCamion.get(icam).size();
+    }
+
+    // getter del nombre de parades (gasolineres) que fa un camio en un viatge 
+    // pre: camio icam te viatge iv
+    public int getNParadasViaje(int icam, int iv) {
+        return viajesPorCamion.get(icam).get(iv).getNGasolineras();
+    }
+
+    // post: retorna el num de la peticio atesa de la gasolinera amb index idx
+    public int getPeticioViaje(int icam, int iv, int idx) {
+        return viajesPorCamion.get(icam).get(iv).getPeticio(idx);
+    }
+
     public double getBeneficio() {
         return beneficioActual;
     }
@@ -569,16 +588,11 @@ public class GasolinaBoard {
             return gasVisitadas[0];
         }
 
-        // retorna l'index de la peticio atesa de l'ultima gasolinera (-1 si no n'hi ha)
-        public int getLastPeticio() {
-            if (gasCount == 0) return -1;
-            return petVisitadas[gasCount - 1];
-        }
-
-        // retorna l'index de la peticio atesa de la 1a gasolinera (-1 si no n'hi ha)
-        public int getFirstPeticio() {
-            if (gasCount == 0) return -1;
-            return petVisitadas[0];
+        // pre: idx es 0 o 1
+        // post: retorna el num de la peticio atesa de la gasolinera amb index idx
+        public int getPeticio(int idx) {
+            if (gasCount < idx + 1) return -1;
+            return petVisitadas[idx];
         }
 
         // pre: km pot ser negatiu
