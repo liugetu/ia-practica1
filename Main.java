@@ -1,4 +1,4 @@
-import IA.Gasolina.GasolinaBoard;
+import IA.Gasolina.*;
 //import IA.ProbIA5.ProbIA5GoalTest;
 //import IA.ProbIA5.ProbIA5HeuristicFunction;
 //import IA.ProbIA5.ProbIA5SuccesorFunction;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.ArrayList;
-import IA.Gasolina.Gasolinera;
+//import IA.Gasolina.*;
 
 public class Main {
     public static void main(String[] args) throws Exception{
@@ -20,7 +20,9 @@ public class Main {
         // definir un estat final?????? (en busqueda local fa falta?)
 
         // inicialitzar el problema.
-        // ProbIA5Board board = new ProbIA5Board(prob, sol );
+        int ngas = 20;
+        int ncen = 5, mult = 1;
+        GasolinaBoard board = new GasolinaBoard(CentrosDistribucion(ncen, mult, 3), Gasolineras(ngas, 5));
 
         // Create the Problem object (canviar noms).
         /*Problem p = new  Problem(board,
@@ -43,6 +45,7 @@ public class Main {
 
         // You can access also to the goal state using the method getGoalState of class Search
     }
+
     private static void printInstrumentation(Properties properties) {
         Iterator keys = properties.keySet().iterator();
         while (keys.hasNext()) {
