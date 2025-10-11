@@ -1,20 +1,9 @@
 package IA.Gasolina;
-
-//~--- non-JDK imports --------------------------------------------------------
-
-
 import aima.search.framework.Successor;
 import aima.search.framework.SuccessorFunction;
-
-//~--- JDK imports ------------------------------------------------------------
-
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Ravi Mohan
- *
- */
 public class GasolinaSuccessorFunction implements SuccessorFunction {
     @SuppressWarnings("unchecked")
     public List getSuccessors(Object aState) {
@@ -44,6 +33,30 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                             //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 
                             retVal.add(new Successor(newBoard));
+                        }
+                    }
+                }
+            }
+        }
+
+        
+        // successors de l'operador reasignar
+        // recorrem totes les peticions (parades) de tots els viatges de tots els camions
+        // i provem d'assignar-les a tots els camions
+        for (int icam1 = 0; icam1 < board.getNCamions(); icam1++) {
+            for (int iv = 0; iv < getNViajesCamion(icam1); iv++) {
+                for (int igas = 0; igas < getNParadasViaje(icam1, iv); igas++) {
+                    for (int icam2 = 0; icam2 < board.getNCamions(); icam2++) {
+                        if (icam1 != icam2) {
+                            GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+                            int ipet = getPeticioViaje(icam1, iv, igas);
+
+                            if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
+                                double v = GasolinaHF.getHeuristicValue(newBoard);
+                                //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
+
+                                retVal.add(new Successor(newBoard));
+                            }
                         }
                     }
                 }
@@ -90,4 +103,3 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         return retVal;
     }
 }
-//~ Formatted by Jindent --- http://www.jindent.com
