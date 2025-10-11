@@ -39,9 +39,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                         // viatje té menys de 2 gasolineres assignades
                         if (!(board.viajesPorCamion.get(icam).get(iviatje).getNGasolineras() < 2)) condicions = false;
 
-                        if (condicions) {
-                            newBoard.addPeticio(igas, ipet, icam, iviatje);
-
+                        if (condicions && newBoard.addPeticio(igas, ipet, icam, iviatje)) {
                             double v = GasolinaHF.getHeuristicValue(newBoard);
                             //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 
@@ -52,9 +50,44 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
             }
         }
 
+        // Operador de swap
+        for (int igas1 = 0; igas1 < board.gasolineras.length; igas1++) {
+            for (int ipet1 = 0; ipet1 < board.gasolineras.get(igas1).length; ipet1++) {
+                for (int icam1 = 0; icam1 < board.viajesPorCamion.length; icam1++) {
+                    for (int iviatje1 = 0; iviatje1 < board.viajesPorCamion.get(icam1).length; iviatje1++) {
+                        for (int igas2 = 0; igas2 < board.gasolineras.length; igas2++) {
+                            for (int ipet2 = 0; ipet2 < board.gasolineras.get(igas2).length; ipet2++) {
+                                for (int icam2 = 0; icam2 < board.viajesPorCamion.length; icam2++) {
+                                    for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).length; iviatje2++) {
+                                        GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+                                        
+                                        Boolean condicions = true;
+                                        // comprovar que la gasolinera igas conte la peticio ipet
+                                        if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
+                                        if (!((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                                        // la peticio ha estat atesa
+                                        if (!board.gasolineras_info.get(igas1).second.get(ipet1)) condicions = false;
+                                        if (!board.gasolineras_info.get(igas2).second.get(ipet2)) condicions = false;
+                                        // viatje existeix
+                                        if (!(board.viajesPorCamion.get(icam1).length > iviatje1)) condicions = false;
+                                        if (!(board.viajesPorCamion.get(icam2).length > iviatje2)) condicions = false;
+
+                                        if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
+                                            double v = GasolinaHF.getHeuristicValue(newBoard);
+                                            //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
+
+                                            retVal.add(new Successor(newBoard));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return retVal;
     }
 }
-
-
 //~ Formatted by Jindent --- http://www.jindent.com
