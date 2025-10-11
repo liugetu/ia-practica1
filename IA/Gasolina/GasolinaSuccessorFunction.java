@@ -85,6 +85,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                         if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
                                         if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
 
+                                        if(icam1 != icam2 && iviatje1 != iviatje2) condicions = false;
+
                                         if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
                                             double v = GasolinaHF.getHeuristicValue(newBoard);
                                             //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();

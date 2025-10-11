@@ -29,6 +29,7 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
 
         boolean condicions = false;
 
+        // Operador d'afegir
         if(k == 0) {
             int icam, iviatje, igas, ipet;
             while(!condicions) {
@@ -38,9 +39,9 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                 igas = myRandom.nextInt(board.gasolineras.size());
                 ipet = myRandom.nextInt(board.gasolineras.get(igas).size());
                 // comprovar que la gasolinera igas conte la peticio ipet
-                if (!((board.gasolineras_info.get(igas).second).size() > ipet)) condicions = false; 
+                if (!((board.gasolineras_info.get(igas).second).length > ipet)) condicions = false; 
                 // la peticio no ha estat atesa encara
-                if (board.gasolineras_info.get(igas).second.get(ipet)) condicions = false;
+                if (((board.gasolineras_info.get(igas)).second)[ipet]) condicions = false;
                 // viatje existeix
                 if (!(board.viajesPorCamion.get(icam).size() > iviatje)) condicions = false;
                 // viatje té menys de 2 gasolineres assignades
@@ -49,44 +50,49 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                 if (condicions && newBoard.addPeticio(igas, ipet, icam, iviatje)) {
                     double v = GasolinaHF.getHeuristicValue(newBoard);
                     //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-                    retVal.add(new Successor(newBoard));
+
+                    //retVal.add(new Successor(newBoard));
                 }
             }
         }
+        // Operador d'intercanviar
         else if(k == 1) {
-            Boolean condicions = true;
-            // comprovar que la gasolinera igas conte la peticio ipet
-            if (!((board.gasolineras_info.get(igas1).second).size() > ipet1)) condicions = false; 
-            if (!((board.gasolineras_info.get(igas2).second).size() > ipet2)) condicions = false; 
-            // la peticio ha estat atesa
-            if (!board.gasolineras_info.get(igas1).second.get(ipet1)) condicions = false;
-            if (!board.gasolineras_info.get(igas2).second.get(ipet2)) condicions = false;
-            // viatje existeix
-            if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
-            if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
+            int icam, iviatje, igas, ipet;
+            while(!condicions) {
+                Boolean condicions = true;
+                icam1 = myRandom.nextInt(board.viajesPorCamion.size());
+                iviatje1 = myRandom.nextInt(board.viajesPorCamion.get(icam).size());
+                igas1 = myRandom.nextInt(board.gasolineras.size());
+                ipet1 = myRandom.nextInt(board.gasolineras.get(igas).size());
+                icam2 = myRandom.nextInt(board.viajesPorCamion.size());
+                iviatje2 = myRandom.nextInt(board.viajesPorCamion.get(icam).size());
+                igas2 = myRandom.nextInt(board.gasolineras.size());
+                ipet2 = myRandom.nextInt(board.gasolineras.get(igas).size());
+                // comprovar que la gasolinera igas conte la peticio ipet
+                if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
+                if (!((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                // la peticio ha estat atesa
+                if (!board.gasolineras_info.get(igas1).second[ipet1]) condicions = false;
+                if (!board.gasolineras_info.get(igas2).second[ipet2]) condicions = false;
+                // viatje existeix
+                if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
+                if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
 
-            if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
-                double v = GasolinaHF.getHeuristicValue(newBoard);
-                //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
+                if(icam1 != icam2 && iviatje1 != iviatje2) condicions = false;
 
-                retVal.add(new Successor(newBoard));
+                if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
+                    double v = GasolinaHF.getHeuristicValue(newBoard);
+                    //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
+
+                    //retVal.add(new Successor(newBoard));
+                }
             }
         }
         else {
-
+            return retVal;
         }
-        
 
-       ProbTSPBoard newBoard = new ProbTSPBoard(board.getNCities(), board.getPath(), board.getDists());
-
-       newBoard.swapCities(i, j);
-
-       double   v = TSPHF.getHeuristicValue(newBoard);
-       String S = ProbTSPBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
-      retVal.add(new Successor(S, newBoard));
-
-      return retVal;
+        return retVal;
     }
 }
 
