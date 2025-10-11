@@ -1,8 +1,8 @@
-package IA.probTSP;
+package IA.Gasolina;
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import IA.probTSP.ProbTSPHeuristicFunction;
+import IA.Gasolina.ProbTSPHeuristicFunction;
 
 import aima.search.framework.Successor;
 import aima.search.framework.SuccessorFunction;
@@ -13,25 +13,68 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * @author Javier Bejar
- *
- */
-public class ProbTSPSuccessorFunctionSA implements SuccessorFunction {
+public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
     public List getSuccessors(Object aState) {
         ArrayList                retVal = new ArrayList();
-        ProbTSPBoard             board  = (ProbTSPBoard) aState;
-        ProbTSPHeuristicFunction TSPHF  = new ProbTSPHeuristicFunction();
+        GasolinaBoard             board  = (GasolinaBoard) aState;
+        GasolinaHeuristicFunction gasolinaHF  = new GasolinaHeuristicFunction();
         Random myRandom=new Random();
         int i,j;
         
         // Nos ahorramos generar todos los sucesores escogiendo un par de ciudades al azar
         
-       i=myRandom.nextInt(board.getNCities());
+        i=myRandom.nextInt(board.getNCities());
        
-       do{
-              j=myRandom.nextInt(board.getNCities());
-       } while (i==j);
+        int k = myRandom.nextInt(2);
+
+        boolean condicions = false;
+
+        if(k == 0) {
+            int icam, iviatje, igas, ipet;
+            while(!condicions) {
+                condicions = true;
+                icam = myRandom.nextInt(board.viajesPorCamion.size());
+                iviatje = myRandom.nextInt(board.viajesPorCamion.get(icam).size());
+                igas = myRandom.nextInt(board.gasolineras.size());
+                ipet = myRandom.nextInt(board.gasolineras.get(igas).size());
+                // comprovar que la gasolinera igas conte la peticio ipet
+                if (!((board.gasolineras_info.get(igas).second).size() > ipet)) condicions = false; 
+                // la peticio no ha estat atesa encara
+                if (board.gasolineras_info.get(igas).second.get(ipet)) condicions = false;
+                // viatje existeix
+                if (!(board.viajesPorCamion.get(icam).size() > iviatje)) condicions = false;
+                // viatje té menys de 2 gasolineres assignades
+                if (!(board.viajesPorCamion.get(icam).get(iviatje).getNGasolineras() < 2)) condicions = false;
+
+                if (condicions && newBoard.addPeticio(igas, ipet, icam, iviatje)) {
+                    double v = GasolinaHF.getHeuristicValue(newBoard);
+                    //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
+                    retVal.add(new Successor(newBoard));
+                }
+            }
+        }
+        else if(k == 1) {
+            Boolean condicions = true;
+            // comprovar que la gasolinera igas conte la peticio ipet
+            if (!((board.gasolineras_info.get(igas1).second).size() > ipet1)) condicions = false; 
+            if (!((board.gasolineras_info.get(igas2).second).size() > ipet2)) condicions = false; 
+            // la peticio ha estat atesa
+            if (!board.gasolineras_info.get(igas1).second.get(ipet1)) condicions = false;
+            if (!board.gasolineras_info.get(igas2).second.get(ipet2)) condicions = false;
+            // viatje existeix
+            if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
+            if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
+
+            if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
+                double v = GasolinaHF.getHeuristicValue(newBoard);
+                //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
+
+                retVal.add(new Successor(newBoard));
+            }
+        }
+        else {
+
+        }
         
 
        ProbTSPBoard newBoard = new ProbTSPBoard(board.getNCities(), board.getPath(), board.getDists());
