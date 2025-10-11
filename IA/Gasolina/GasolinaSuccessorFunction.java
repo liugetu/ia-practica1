@@ -12,7 +12,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         GasolinaHeuristicFunction GasolinaHF = new GasolinaHeuristicFunction();
         
         // Operador d'afegir
-        for (int igas = 0; igas < board.gasolineras.size(); igas++) {
+        for (int igas = 0; igas < board.getNGasolineras(); igas++) {
             for (int ipet = 0; ipet < (board.gasolineras_info.get(igas).second).length; ipet++) {
                 for (int icam = 0; icam < board.viajesPorCamion.size(); icam++) {
                     for (int iviatje = 0; iviatje < board.viajesPorCamion.get(icam).size(); iviatje++) {

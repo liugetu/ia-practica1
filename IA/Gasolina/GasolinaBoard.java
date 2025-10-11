@@ -238,6 +238,10 @@ public class GasolinaBoard {
         return camions.size();
     }
 
+    public int getNGasolineras() {
+        return gasolineras.size();
+    }
+
     public int getNViajesCamion(int icam) {
         return viajesPorCamion.get(icam).size();
     }
