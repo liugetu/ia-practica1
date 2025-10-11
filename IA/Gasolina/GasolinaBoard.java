@@ -366,7 +366,7 @@ public class GasolinaBoard {
                         } 
                     }
                     else if (viajesAsignadas.size() < limitViatgesCamio && 
-                    kmNew + kmCurrent <= limitKmCamioDiari) { // mirar si es pot afegirla a un nou viatge
+                        kmNew + kmCurrent <= limitKmCamioDiari) { // mirar si es pot afegirla a un nou viatge
                         // crear un nou viatge per aquest camio
                         addGasolineraAViaje(ig, kmNew, ip, ic);
                         registrarPeticioAtesa(ig, ip, kmNew); // actualitzar beneficis i kms
