@@ -506,7 +506,7 @@ public class GasolinaBoard {
             if(gasV2[0] == igas2 && petV2[0] == ipet2) {
                 // peticio 2 es la primera del viatge 2
                 if(swap_first_first(v1, v2, igas1, igas2)) return true;
-                else return fasle;
+                else return false;
             }
             else {
                 // peticio 2 es la segona del viatge 2
