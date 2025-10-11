@@ -2,6 +2,7 @@ import IA.Gasolina.GasolinaBoard;
 import IA.Gasolina.GasolinaGoalTest;
 import IA.Gasolina.GasolinaHeuristicFunction;
 import IA.Gasolina.GasolinaSuccessorFunction;
+import IA.Gasolina.GasolinaSuccessorFunctionSA;
 
 import aima.search.framework.GraphSearch;
 import aima.search.framework.Problem;
