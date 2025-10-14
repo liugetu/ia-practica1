@@ -33,7 +33,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                             double v = GasolinaHF.getHeuristicValue(newBoard);
                             //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 
-                            retVal.add(new Successor("hola", newBoard));
+                            retVal.add(new Successor("hola1", newBoard));
                         }
                     }
                 }
@@ -57,7 +57,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                             if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
                                 double v = GasolinaHF.getHeuristicValue(newBoard);
                                 //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-                                retVal.add(new Successor("hola", newBoard));
+                                retVal.add(new Successor("hola2", newBoard));
                             }
                         }
                     }
@@ -94,7 +94,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                             double v = GasolinaHF.getHeuristicValue(newBoard);
                                             //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 
-                                            retVal.add(new Successor("hola", newBoard));
+                                            retVal.add(new Successor("hola3", newBoard));
                                         }
                                     }
                                 }

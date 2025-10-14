@@ -22,7 +22,7 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
         // Operador d'afegir
         if(k == 0) {
             int icam, iviatje, igas, ipet;
-            GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+            GasolinaBoard newBoard = board.copy();
             while(!condicions) {
                 condicions = true;
                 icam = myRandom.nextInt(board.viajesPorCamion.size());
@@ -45,11 +45,12 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                     retVal.add(new Successor("hola", newBoard));
                 }
             }
+            System.out.println("Hem fet el afegir");
         }
         // Operador d'intercanviar
         else if(k == 1) {
             int icam1, iviatje1, igas1, ipet1, icam2, iviatje2, igas2, ipet2;
-            GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+            GasolinaBoard newBoard = board.copy();
             while(!condicions) {
                 condicions = true;
                 icam1 = myRandom.nextInt(board.viajesPorCamion.size());
@@ -82,12 +83,13 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
         }
         // Operador de reasignar
         else {
-            GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+            GasolinaBoard newBoard = board.copy();
             int icam1 = myRandom.nextInt(board.viajesPorCamion.size());
             int iv = myRandom.nextInt(board.viajesPorCamion.get(icam1).size());
-            int igas = myRandom.nextInt(board.viajesPorCamion.get(icam1).get(iv).getNGasolineras());
+            int iparada = myRandom.nextInt(board.viajesPorCamion.get(icam1).get(iv).getNGasolineras());
             int icam2 = myRandom.nextInt(board.viajesPorCamion.size());
-            int ipet = board.getPeticioViaje(icam1, iv, igas);
+            int igas = board.getGasolineraViaje(icam1, iv, iparada);
+            int ipet = board.getPeticioViaje(icam1, iv, iparada);
 
             if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
                 double v = gasolinaHF.getHeuristicValue(newBoard);

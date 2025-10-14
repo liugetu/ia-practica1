@@ -23,15 +23,15 @@ public class Main {
         // definir un estat final?????? (en busqueda local fa falta?)
 
         // inicialitzar el problema
-        int ngas = 20;
+        int ngas = 50;
         int ncen = 5, mult = 1;
         GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, 3), new Gasolineras(ngas, 5));
 
         System.out.println("Camions: " + board.getNCamions() + ", Gasolineres: " + board.getNGasolineras());
 
         // Pick an initial solution for local search
-        //GasolinaBoard initial = board.solIniRandom(); 
-        GasolinaBoard initial = board.solIniGreedy();
+        GasolinaBoard initial = board.solIniRandom(); 
+        //GasolinaBoard initial = board.solIniGreedy();
         System.out.println("Hem fet l'inicialitzacio");
 
         // Create the Problem object using the chosen initial state
@@ -51,7 +51,7 @@ public class Main {
         0.001: lambda (tasa de enfriamiento)
         */
         //SimulatedAnnealingSearch alg = new SimulatedAnnealingSearch(2000, 100, 5, 0.001);
-        System.out.println("Hem fet el SA");
+        System.out.println("Hem fet el HC");
 
         // Run the SearchAgent
         SearchAgent agent = new SearchAgent(p, alg);
