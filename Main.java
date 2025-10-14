@@ -22,26 +22,28 @@ public class Main {
         // generar estat inicial (aleatori/greedy)
         // definir un estat final?????? (en busqueda local fa falta?)
 
-        // inicialitzar el problema.
+        // inicialitzar el problema
         int ngas = 20;
         int ncen = 5, mult = 1;
         GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, 3), new Gasolineras(ngas, 5));
 
-        // quick smoke output
         System.out.println("Camions: " + board.getNCamions() + ", Gasolineres: " + board.getNGasolineras());
 
         // Pick an initial solution for local search
         //GasolinaBoard initial = board.solIniRandom(); 
-        GasolinaBoard initial = board.solIniGreedy(); 
+        GasolinaBoard initial = board.solIniGreedy();
+        System.out.println("Hem fet l'inicialitzacio");
 
         // Create the Problem object using the chosen initial state
         Problem p = new Problem(initial,
                                 new GasolinaSuccessorFunction(), // or new GasolinaSuccessorFunctionSA()
                                 new GasolinaGoalTest(),
                                 new GasolinaHeuristicFunction());
-       
+        System.out.println("Hem fet el problema");
+
         // Hill Climbing search (for SA, instantiate SimulatedAnnealingSearch instead)
         HillClimbingSearch alg = new HillClimbingSearch();
+        System.out.println("Hem fet el HC");
 
         /*
         2000: número máximo de iteraciones
@@ -53,6 +55,7 @@ public class Main {
 
         // Run the SearchAgent
         SearchAgent agent = new SearchAgent(p, alg);
+        System.out.println("Hem fet el agent");
 
         // Print the results of the search
         System.out.println();
