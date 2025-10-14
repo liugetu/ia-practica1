@@ -43,7 +43,6 @@ public class Main {
 
         // Hill Climbing search (for SA, instantiate SimulatedAnnealingSearch instead)
         HillClimbingSearch alg = new HillClimbingSearch();
-        System.out.println("Hem fet el HC");
 
         /*
         2000: número máximo de iteraciones
@@ -52,6 +51,7 @@ public class Main {
         0.001: lambda (tasa de enfriamiento)
         */
         //SimulatedAnnealingSearch alg = new SimulatedAnnealingSearch(2000, 100, 5, 0.001);
+        System.out.println("Hem fet el SA");
 
         // Run the SearchAgent
         SearchAgent agent = new SearchAgent(p, alg);

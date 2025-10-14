@@ -673,7 +673,7 @@ public class GasolinaBoard {
 
         // pre: idx es 0 o 1
         // post: retorna el num de la peticio atesa de la gasolinera amb index idx
-        public int (int idx) {
+        public int getPeticio(int idx) {
             if (gasCount < idx + 1) return -1;
             return petVisitadas[idx];
         }
@@ -795,7 +795,6 @@ public class GasolinaBoard {
             // Copiar arrays
             System.arraycopy(other.gasVisitadas, 0, this.gasVisitadas, 0, this.gasVisitadas.length);
             System.arraycopy(other.petVisitadas, 0, this.petVisitadas, 0, this.petVisitadas.length);
-
         }
     }
 }
