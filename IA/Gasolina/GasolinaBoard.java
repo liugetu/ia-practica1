@@ -58,6 +58,7 @@ public class GasolinaBoard {
 
     /* Constructor */
     public GasolinaBoard(ArrayList<Distribucion> camions, ArrayList<Gasolinera> gasolineras) {
+        System.out.println("Hem entrat a la constructora de board");
         this.camions = camions;
         this.gasolineras = gasolineras;
 
@@ -309,6 +310,11 @@ public class GasolinaBoard {
         return viajesPorCamion.get(icam).get(iv).getPeticio(idx);
     }
 
+    // post: retorna el num de la gasolinera atesa de la gasolinera amb index idx
+    public int getGasolineraViaje(int icam, int iv, int idx) {
+        return viajesPorCamion.get(icam).get(iv).getGasolinera(idx);
+    }
+
     public double getBeneficio() {
         return beneficioActual;
     }
@@ -392,7 +398,7 @@ public class GasolinaBoard {
     // genera una solucio inicial random
     public GasolinaBoard solIniRandom() {
         int ngas = gasolineras.size();
-        GasolinaBoard b = new GasolinaBoard(camions, gasolineras);
+        GasolinaBoard b = this;
 
         // inicialitzar viatges per camio (buits)
         for (int i = 0; i < camions.size(); i++) b.viajesPorCamion.get(i).clear();
@@ -466,7 +472,7 @@ public class GasolinaBoard {
 
     // genera una solucio inicial greedy
     public GasolinaBoard solIniGreedy() {
-        GasolinaBoard board = new GasolinaBoard(camions, gasolineras);
+        GasolinaBoard board = this;
 
         // inicialitzar viatges per camio (buits)
         for (int i = 0; i < camions.size(); i++) board.viajesPorCamion.get(i).clear();
@@ -552,90 +558,54 @@ public class GasolinaBoard {
         Viaje v1 = viajesPorCamion.get(icam1).get(iviatje1);
         Viaje v2 = viajesPorCamion.get(icam2).get(iviatje2);
 
-        int[] gasV1 = v1.getGasVisitadas();
-        int[] gasV2 = v2.getGasVisitadas();
-        int[] petV1 = v1.getPetVisitadas();
-        int[] petV2 = v2.getPetVisitadas();
+        // Determinar si cada petición es primera o segunda en su viaje
+        boolean isPrimera1 = (v1.getGasVisitadas()[0] == igas1 && v1.getPetVisitadas()[0] == ipet1);
+        boolean isPrimera2 = (v2.getGasVisitadas()[0] == igas2 && v2.getPetVisitadas()[0] == ipet2);
 
-        if(gasV1[0] == igas1 && petV1[0] == ipet1) {
-            // peticio 1 es la primera del viatge 1
-            if(gasV2[0] == igas2 && petV2[0] == ipet2) {
-                // peticio 2 es la primera del viatge 2
-                if(swap_first_first(v1, v2, igas1, igas2)) return true;
-                else return false;
-            }
-            else {
-                // peticio 2 es la segona del viatge 2
-                if(petV2.length > 1 && gasV2[1] == igas2 && petV2[1] == ipet2) {
-                    if(swap_first_last(v1, v2, igas1, igas2)) return true;
-                    else return false;
-                }
-                else return false; // error
-            }
-        }
-        else {
-            // peticio 1 es la segona del viatge 1
-            if(gasV2[0] == igas2 && petV2[0] == ipet2) {
-                // peticio 2 es la primera del viatge 2
-                if(petV1.length > 1 && gasV1[1] == igas1 && petV1[1] == ipet1) {
-                    if(swap_last_first(v1, v2, igas1, igas2)) return true;
-                    else return false;
-                }
-                else return false; // error
-            }
-            else {
-                // peticio 2 es la segona del viatge 2
-                if(petV1.length > 1 && petV2.length > 1 && gasV1[1] == igas1 && petV1[1] == ipet1 && gasV2[1] == igas2 && petV2[1] == ipet2) {
-                    if(swap_last_last(v1, v2, igas1, igas2)) return true;
-                    else return false;
-                }
-                else return false; // error
-            }
+        // Realizar swap según la posición de cada petición
+        if (isPrimera1 && isPrimera2) {
+            return swapPeticiones(v1, v2, icam1, icam2, true, true);
+        } else if (isPrimera1 && !isPrimera2) {
+            return swapPeticiones(v1, v2, icam1, icam2, true, false);
+        } else if (!isPrimera1 && isPrimera2) {
+            return swapPeticiones(v1, v2, icam1, icam2, false, true);
+        } else {
+            return swapPeticiones(v1, v2, icam1, icam2, false, false);
         }
     }
 
-    public boolean swap_first_first(Viaje v1, Viaje v2, int c1, int c2) {
-        if(v1.canSwap_first(v2.getGas1(), c1) && v2.canSwap_first(v1.getGas1(), c2)) {
-            int g1 = v1.getGas1();
-            int g2 = v2.getGas1();
+    private boolean swapPeticiones(Viaje v1, Viaje v2, int c1, int c2, boolean isPrimera1, boolean isPrimera2) {
+        // Obtener gasolineras según posición
+        int g1 = isPrimera1 ? v1.getGas1() : v1.getGas2();
+        int g2 = isPrimera2 ? v2.getGas1() : v2.getGas2();
+        
+        // Verificar que las gasolineras existen (especialmente para posición segunda)
+        if ((!isPrimera1 && g1 <= 0) || (!isPrimera2 && g2 <= 0)) {
+            return false;
+        }
+
+        // Verificar si el swap es posible
+        boolean canSwapV1 = isPrimera1 ? v1.canSwap_first(g2, c1) : v1.canSwap_last(g2, c1);
+        boolean canSwapV2 = isPrimera2 ? v2.canSwap_first(g1, c2) : v2.canSwap_last(g1, c2);
+        
+        if (!canSwapV1 || !canSwapV2) {
+            return false;
+        }
+
+        // Realizar el swap
+        if (isPrimera1) {
             v1.swap_first(g2, c1);
-            v2.swap_first(g1, c2);
-            return true;
-        }
-        else return false;
-    }
-
-    public boolean swap_first_last(Viaje v1, Viaje v2, int c1, int c2) {
-        if(v2.getGas2() > 0 && v1.canSwap_first(v2.getGas2(), c1) && v2.canSwap_last(v1.getGas1(), c2)) {
-            int g1 = v1.getGas1();
-            int g2 = v2.getGas2();
-            v1.swap_first(g2, c1);
-            v2.swap_last(g1, c2);
-            return true;
-        }
-        else return false;
-    }
-
-    public boolean swap_last_last(Viaje v1, Viaje v2, int c1, int c2) {
-        if(v2.getGas2() > 0 && v1.getGas2() > 0 && v1.canSwap_last(v2.getGas2(), c1) && v2.canSwap_last(v1.getGas2(), c2)) {
-            int g1 = v1.getGas2();
-            int g2 = v2.getGas2();
+        } else {
             v1.swap_last(g2, c1);
-            v2.swap_last(g1, c2);
-            return true;
         }
-        else return false;
-    }
-
-    public boolean swap_last_first(Viaje v1, Viaje v2, int c1, int c2) {
-        if(v1.getGas2() > 0 && v1.canSwap_last(v2.getGas1(), c1) && v2.canSwap_first(v1.getGas2(), c2)) {
-            int g1 = v1.getGas2();
-            int g2 = v2.getGas1();
-            v1.swap_last(g2, c1);
+        
+        if (isPrimera2) {
             v2.swap_first(g1, c2);
-            return true;
+        } else {
+            v2.swap_last(g1, c2);
         }
-        else return false;
+        
+        return true;
     }
 
     class Viaje {
@@ -706,6 +676,13 @@ public class GasolinaBoard {
         public int (int idx) {
             if (gasCount < idx + 1) return -1;
             return petVisitadas[idx];
+        }
+
+        // pre: idx es 0 o 1
+        // post: retorna el num de la gasolinera atesa de la gasolinera amb index idx
+        public int getGasolinera(int idx) {
+            if (gasCount < idx + 1) return -1;
+            return gasVisitadas[idx];
         }
 
         // pre: km pot ser negatiu

@@ -4,11 +4,11 @@ import aima.search.framework.HeuristicFunction;
 
 public class GasolinaHeuristicFunction implements HeuristicFunction  {
   public boolean equals(Object obj) {
-      return super.equals(obj);
+    return super.equals(obj);
   }
-  
+
   public double getHeuristicValue(Object state) {
-   GasolinaBoard board=(GasolinaBoard)state;
-   return -board.getBeneficio();
+    GasolinaBoard board=(GasolinaBoard)state;
+    return -board.getBeneficio();
   }
 }

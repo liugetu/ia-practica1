@@ -7,6 +7,7 @@ import java.util.List;
 public class GasolinaSuccessorFunction implements SuccessorFunction {
     @SuppressWarnings("unchecked")
     public List getSuccessors(Object aState) {
+        System.out.println("Hem entrat a successor");
         ArrayList retVal = new ArrayList();
         GasolinaBoard board = (GasolinaBoard) aState;
         GasolinaHeuristicFunction GasolinaHF = new GasolinaHeuristicFunction();
@@ -38,6 +39,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
+        System.out.println("Acaba bucle afegir");
 
         
         // successors de l'operador reasignar
@@ -45,16 +47,16 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         // i provem d'assignar-les a tots els camions
         for (int icam1 = 0; icam1 < board.getNCamions(); icam1++) {
             for (int iv = 0; iv < board.getNViajesCamion(icam1); iv++) {
-                for (int igas = 0; igas < board.getNParadasViaje(icam1, iv); igas++) {
+                for (int iparada = 0; iparada < board.getNParadasViaje(icam1, iv); iparada++) {
                     for (int icam2 = 0; icam2 < board.getNCamions(); icam2++) {
                         if (icam1 != icam2) {
                             GasolinaBoard newBoard = board.copy();
-                            int ipet = board.getPeticioViaje(icam1, iv, igas);
+                            int igas = board.getGasolineraViaje(icam1, iv, iparada);
+                            int ipet = board.getPeticioViaje(icam1, iv, iparada);
 
                             if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
                                 double v = GasolinaHF.getHeuristicValue(newBoard);
                                 //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
                                 retVal.add(new Successor("hola", newBoard));
                             }
                         }
@@ -62,6 +64,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
+        System.out.println("Acaba bucle reasignar");
 
         // Operador de swap
         for (int igas1 = 0; igas1 < board.gasolineras.size(); igas1++) {
@@ -101,6 +104,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
+        System.out.println("Acaba bucle swap");
 
         return retVal;
     }
