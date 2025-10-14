@@ -566,21 +566,30 @@ public class GasolinaBoard {
             }
             else {
                 // peticio 2 es la segona del viatge 2
-                if(swap_first_last(v1, v2, igas1, igas2)) return true;
-                else return false;
+                if(petV2.length > 1 && gasV2[1] == igas2 && petV2[1] == ipet2) {
+                    if(swap_first_last(v1, v2, igas1, igas2)) return true;
+                    else return false;
+                }
+                else return false; // error
             }
         }
         else {
             // peticio 1 es la segona del viatge 1
             if(gasV2[0] == igas2 && petV2[0] == ipet2) {
                 // peticio 2 es la primera del viatge 2
-                if(swap_last_first(v1, v2, igas1, igas2)) return true;
-                else return false;
+                if(petV1.length > 1 && gasV1[1] == igas1 && petV1[1] == ipet1) {
+                    if(swap_last_first(v1, v2, igas1, igas2)) return true;
+                    else return false;
+                }
+                else return false; // error
             }
             else {
                 // peticio 2 es la segona del viatge 2
-                if(swap_last_last(v1, v2, igas1, igas2)) return true;
-                else return false;
+                if(petV1.length > 1 && petV2.length > 1 && gasV1[1] == igas1 && petV1[1] == ipet1 && gasV2[1] == igas2 && petV2[1] == ipet2) {
+                    if(swap_last_last(v1, v2, igas1, igas2)) return true;
+                    else return false;
+                }
+                else return false; // error
             }
         }
     }
@@ -694,7 +703,7 @@ public class GasolinaBoard {
 
         // pre: idx es 0 o 1
         // post: retorna el num de la peticio atesa de la gasolinera amb index idx
-        public int getPeticio(int idx) {
+        public int (int idx) {
             if (gasCount < idx + 1) return -1;
             return petVisitadas[idx];
         }
@@ -809,6 +818,7 @@ public class GasolinaBoard {
             // Copiar arrays
             System.arraycopy(other.gasVisitadas, 0, this.gasVisitadas, 0, this.gasVisitadas.length);
             System.arraycopy(other.petVisitadas, 0, this.petVisitadas, 0, this.petVisitadas.length);
+
         }
     }
 }
