@@ -4,7 +4,7 @@ import IA.Gasolina.GasolinaHeuristicFunction;
 import IA.Gasolina.GasolinaSuccessorFunction;
 import IA.Gasolina.CentrosDistribucion;
 import IA.Gasolina.Gasolineras;
-//import IA.Gasolina.GasolinaSuccessorFunctionSA;
+import IA.Gasolina.GasolinaSuccessorFunctionSA;
 
 import aima.search.framework.GraphSearch;
 import aima.search.framework.Problem;
@@ -62,16 +62,6 @@ public class Main {
         // Final state
         GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
         System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
-
-        // Instantiate the SearchAgent object
-        //SearchAgent agent = new SearchAgent(p, alg);
-
-	    // We print the results of the search
-        //System.out.println();
-        //printActions(agent.getActions());
-        //printInstrumentation(agent.getInstrumentation());
-
-        // You can access also to the goal state using the method getGoalState of class Search
     }
 
     private static void printInstrumentation(Properties properties) {
