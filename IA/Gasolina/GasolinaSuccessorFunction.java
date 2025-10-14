@@ -13,10 +13,10 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         
         // Operador d'afegir
         for (int igas = 0; igas < board.getNGasolineras(); igas++) {
-            for (int ipet = 0; ipet < (board.gasolineras_info.get(igas).second).length; ipet++) {
+            for (int ipet = 0; ipet < board.getNPeticionsGasolinera(igas); ipet++) {
                 for (int icam = 0; icam < board.viajesPorCamion.size(); icam++) {
                     for (int iviatje = 0; iviatje < board.viajesPorCamion.get(icam).size(); iviatje++) {
-                        GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+                        GasolinaBoard newBoard = board.copy();
                         
                         Boolean condicions = true;
                         // comprovar que la gasolinera igas conte la peticio ipet
@@ -32,7 +32,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                             double v = GasolinaHF.getHeuristicValue(newBoard);
                             //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 
-                            //retVal.add(new Successor(newBoard));
+                            retVal.add(new Successor("hola", newBoard));
                         }
                     }
                 }
@@ -48,14 +48,14 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                 for (int igas = 0; igas < board.getNParadasViaje(icam1, iv); igas++) {
                     for (int icam2 = 0; icam2 < board.getNCamions(); icam2++) {
                         if (icam1 != icam2) {
-                            GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+                            GasolinaBoard newBoard = board.copy();
                             int ipet = board.getPeticioViaje(icam1, iv, igas);
 
                             if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
                                 double v = GasolinaHF.getHeuristicValue(newBoard);
                                 //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 
-                                //retVal.add(new Successor(newBoard));
+                                retVal.add(new Successor("hola", newBoard));
                             }
                         }
                     }
@@ -72,7 +72,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                             for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2).second).length; ipet2++) {
                                 for (int icam2 = 0; icam2 < board.viajesPorCamion.size(); icam2++) {
                                     for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).size(); iviatje2++) {
-                                        GasolinaBoard newBoard = new GasolinaBoard(board.camions, board.gasolineras);
+                                        GasolinaBoard newBoard = board.copy();
                                         
                                         Boolean condicions = true;
                                         // comprovar que la gasolinera igas conte la peticio ipet
@@ -91,7 +91,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                             double v = GasolinaHF.getHeuristicValue(newBoard);
                                             //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 
-                                            //retVal.add(new Successor(newBoard));
+                                            retVal.add(new Successor("hola", newBoard));
                                         }
                                     }
                                 }

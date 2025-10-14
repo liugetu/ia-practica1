@@ -102,6 +102,54 @@ public class GasolinaBoard {
         }
     }
 
+
+    /* Copy Constructor - Crea una copia profunda del estado actual */
+    /**
+     
+    Constructor de copia que crea una nueva instancia de GasolinaBoard
+    con el mismo estado que la instancia proporcionada.
+    @param other La instancia de GasolinaBoard a copiar*/
+    public GasolinaBoard(GasolinaBoard other) {// Las variables estáticas camions, gasolineras, distCentroGas, distGasGas no necesitan ser copiadas // ya que son compartidas y son inmutables una vez inicializadas
+
+        // Copiar valores primitivos
+        this.beneficioActual = other.beneficioActual;
+        this.costeTotalKm = other.costeTotalKm;
+
+        // Copia profunda del array de kilómetros por camión
+        this.kmsPorCamion = new int[other.kmsPorCamion.length];
+        System.arraycopy(other.kmsPorCamion, 0, this.kmsPorCamion, 0, other.kmsPorCamion.length);
+
+        // Copia profunda de viajesPorCamion
+        this.viajesPorCamion = new ArrayList<>();
+        for (int i = 0; i < other.viajesPorCamion.size(); i++) {
+            ArrayList<Viaje> viajesOriginales = other.viajesPorCamion.get(i);
+            ArrayList<Viaje> nuevosViajes = new ArrayList<>();
+
+            for (Viaje viajeOriginal : viajesOriginales) {
+                // Crear una copia del viaje
+                Viaje nuevoViaje = new Viaje();
+                nuevoViaje.copyFrom(viajeOriginal);
+                nuevosViajes.add(nuevoViaje);
+            }
+
+            this.viajesPorCamion.add(nuevosViajes);
+        }
+
+        // NOTA: gasolineras_info es estático y se modifica durante la ejecución,
+        // por lo que para una copia completa del estado se debería copiar también.
+        // Sin embargo, al ser estático, las modificaciones afectarían a todas las instancias.
+        // Si se necesita una copia independiente, habría que cambiar gasolineras_info 
+        // de static a instance variable.
+    }
+
+    /**
+     
+    Método de conveniencia que retorna una nueva instancia copiada
+    @return Una nueva instancia de GasolinaBoard con el mismo estado*/
+    public GasolinaBoard copy() {
+        return new GasolinaBoard(this);}
+
+
     // no-arg constructor for helper/factory methods
     /*public GasolinaBoard() {
         this.viajes = new ArrayList<>();
@@ -240,6 +288,10 @@ public class GasolinaBoard {
 
     public int getNGasolineras() {
         return gasolineras.size();
+    }
+
+    public int getNPeticionsGasolinera(int igas) {
+        return (gasolineras_info.get(igas).second).length;
     }
 
     public int getNViajesCamion(int icam) {
@@ -413,7 +465,7 @@ public class GasolinaBoard {
     }
 
     // genera una solucio inicial greedy
-    public GasolinaBoard solIniGreedy(ArrayList<Gasolinera> gasolineras) {
+    public GasolinaBoard solIniGreedy() {
         GasolinaBoard board = new GasolinaBoard(camions, gasolineras);
 
         // inicialitzar viatges per camio (buits)
@@ -747,6 +799,16 @@ public class GasolinaBoard {
             int km_prev_new = distGasGas[gasVisitadas[0]][g];
             gasVisitadas[1] = g;
             kmRecorridos = kmRecorridos - km_back_old - km_prev_old + km_back_new + km_prev_new;
+        }
+
+        // Método para copiar el estado de otro viaje
+        public void copyFrom(Viaje other) {
+            this.kmRecorridos = other.kmRecorridos;
+            this.gasCount = other.gasCount;
+
+            // Copiar arrays
+            System.arraycopy(other.gasVisitadas, 0, this.gasVisitadas, 0, this.gasVisitadas.length);
+            System.arraycopy(other.petVisitadas, 0, this.petVisitadas, 0, this.petVisitadas.length);
         }
     }
 }
