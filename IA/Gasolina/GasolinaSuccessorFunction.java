@@ -88,7 +88,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                         if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
                                         if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
 
-                                        if(icam1 != icam2 && iviatje1 != iviatje2) condicions = false;
+                                        if (icam1 == icam2 && iviatje1 == iviatje2) condicions = false;
 
                                         if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
                                             double v = GasolinaHF.getHeuristicValue(newBoard);
@@ -105,6 +105,43 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
             }
         }
         System.out.println("Acaba bucle swap");
+
+
+        // operador intercanvi
+        for (int igas1 = 0; igas1 < board.gasolineras.size(); igas1++) {
+            for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1).second).length; ipet1++) {
+                for (int icam1 = 0; icam1 < board.viajesPorCamion.size(); icam1++) {
+                    for (int iviatje1 = 0; iviatje1 < board.viajesPorCamion.get(icam1).size(); iviatje1++) {
+                        for (int igas2 = 0; igas2 < board.gasolineras.size(); igas2++) {
+                            for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2).second).length; ipet2++) {
+                                GasolinaBoard newBoard = board.copy();
+                                        
+                                Boolean condicions = true;
+                                // comprovar que la gasolinera igas conte la peticio ipet
+                                if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
+                                if (!((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                                // Verificar que la petició 1 està atesa
+                                if (!board.gasolineras_info.get(igas1).second[ipet1]) condicions = false;
+                                // Verificar que la petició 2 NO està atesa
+                                if (board.gasolineras_info.get(igas2).second[ipet2]) condicions = false;
+                                // viatje existeix
+                                if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
+                                // que no siguin la meteixa gasolinera
+                                if(igas1 == igas2) condicions = false;
+
+                                if (condicions && board.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
+                                    double v = GasolinaHF.getHeuristicValue(newBoard);
+                                    //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
+
+                                    retVal.add(new Successor("hola4", newBoard));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println("Acaba bucle intercanvi");
 
         return retVal;
     }
