@@ -192,8 +192,6 @@ public class GasolinaBoard {
         return true;
     }
 
-
-
     // metode auxiliar per treure la gasolinera igas del viatge v del camio icam
     // NO actualitza els beneficis!
     public void removeGasolineraViaje(int iviaje, int icam, int igas, int ipet) {
@@ -273,15 +271,89 @@ public class GasolinaBoard {
         else return false;
     }
 
+    // Intercanvia una petició atesa per una que no ho està
+    public boolean intercanvi(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2) {
+        Viaje v = viajesPorCamion.get(icam1).get(iviatje1);
+
+        // Determinar si la petició es primera o segona al seu viatje
+        boolean isPrimera = (v.getGasVisitadas()[0] == igas1 && v.getPetVisitadas()[0] == ipet1);
+        if (!isPrimera && v.gasCount < 2) return false; // La petició no és la segona si no hi ha segona parada
+        if (!isPrimera && !(v.getGasVisitadas()[1] == igas1 && v.getPetVisitadas()[1] == ipet1)) return false;
+
+        // Calcular els nous kilòmetres si es fa l'intercanvi
+        int kmOld = v.getKmRecorridos();
+        int kmNew;
+        
+        if (v.gasCount == 1) {
+            // Només hi ha una parada, es canvia per la nova gasolinera
+            kmNew = 2 * distCentroGas[icam1][igas2];
+        } else {
+            // Hi ha dues parades
+            if (isPrimera) {
+                // Canviar la primera parada
+                int kmCentreOld = distCentroGas[icam1][igas1];
+                int kmCentreNew = distCentroGas[icam1][igas2];
+                int kmEntreOld = distGasGas[igas1][v.getGasVisitadas()[1]];
+                int kmEntreNew = distGasGas[igas2][v.getGasVisitadas()[1]];
+                kmNew = kmOld - kmCentreOld - kmEntreOld + kmCentreNew + kmEntreNew;
+            } else {
+                // Canviar la segona parada
+                int kmTornadaOld = distCentroGas[icam1][igas1];
+                int kmTornadaNew = distCentroGas[icam1][igas2];
+                int kmEntreOld = distGasGas[v.getGasVisitadas()[0]][igas1];
+                int kmEntreNew = distGasGas[v.getGasVisitadas()[0]][igas2];
+                kmNew = kmOld - kmTornadaOld - kmEntreOld + kmTornadaNew + kmEntreNew;
+            }
+        }
+
+        // Verificar que els nous kilòmetres no superen el límit diari
+        int kmDiferencia = kmNew - kmOld;
+        if (kmsPorCamion[icam1] + kmDiferencia > limitKmCamioDiari) return false;
+
+        // Calcular el canvi en beneficis
+        ArrayList<Integer> pets1 = gasolineras.get(igas1).getPeticiones();
+        ArrayList<Integer> pets2 = gasolineras.get(igas2).getPeticiones();
+        
+        double beneficiOld = getPreuDiposit(pets1.get(ipet1));
+        double costOld = kmOld * costePorKm;
+        
+        double beneficiNew = getPreuDiposit(pets2.get(ipet2));
+        double costNew = kmNew * costePorKm;
+        
+        // Realitzar l'intercanvi
+        // Actualitzar les gasolineres visitades i peticions
+        if (isPrimera) {
+            v.gasVisitadas[0] = igas2;
+            v.petVisitadas[0] = ipet2;
+        } else {
+            v.gasVisitadas[1] = igas2;
+            v.petVisitadas[1] = ipet2;
+        }
+        
+        // Actualitzar l'estat de les peticions
+        gasolineras_info.get(igas1).second[ipet1] = false; // ja no està atesa
+        gasolineras_info.get(igas2).second[ipet2] = true;  // ara està atesa
+        
+        // Actualitzar kilòmetres
+        v.kmRecorridos = kmNew;
+        kmsPorCamion[icam1] += kmDiferencia;
+        costeTotalKm += kmDiferencia;
+        
+        // Actualitzar beneficis
+        beneficioActual = beneficioActual - beneficiOld + costOld + beneficiNew - costNew;
+        
+        return true;
+    }
+
     /* Heuristic function */
     public double heuristic(){
         return 0;
     }
 
     /* Goal test */
-    public boolean is_goal(){
+    /*public boolean is_goal(){
         return false;
-    }
+    }*/
 
     public int getNCamions() {
         return camions.size();
