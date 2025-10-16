@@ -626,7 +626,7 @@ public class GasolinaBoard {
     }
 
     // swap de peticions entre viatges de camions
-    public boolean swap(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2, int icam2, int iviatje2) {
+    /*public boolean swap(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2, int icam2, int iviatje2) {
         Viaje v1 = viajesPorCamion.get(icam1).get(iviatje1);
         Viaje v2 = viajesPorCamion.get(icam2).get(iviatje2);
 
@@ -678,6 +678,98 @@ public class GasolinaBoard {
         }
         
         return true;
+    }
+    */
+
+   // swap de peticions entre viatges de camions
+    public boolean swap(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2, int icam2, int iviatje2) {
+        Viaje v1 = viajesPorCamion.get(icam1).get(iviatje1);
+        Viaje v2 = viajesPorCamion.get(icam2).get(iviatje2);
+
+        int[] gasV1 = v1.getGasVisitadas();
+        int[] gasV2 = v2.getGasVisitadas();
+        int[] petV1 = v1.getPetVisitadas();
+        int[] petV2 = v2.getPetVisitadas();
+
+        if(gasV1[0] == igas1 && petV1[0] == ipet1) {
+            // peticio 1 es la primera del viatge 1
+            if(gasV2[0] == igas2 && petV2[0] == ipet2) {
+                // peticio 2 es la primera del viatge 2
+                if(swap_first_first(v1, v2, icam1, icam2)) return true;
+                else return false;
+            }
+            else {
+                // peticio 2 es la segona del viatge 2
+                if(petV2.length > 1 && gasV2[1] == igas2 && petV2[1] == ipet2) {
+                    if(swap_first_last(v1, v2, icam1, icam2)) return true;
+                    else return false;
+                }
+                else return false; // error
+            }
+        }
+        else {
+            // peticio 1 es la segona del viatge 1
+            if(gasV2[0] == igas2 && petV2[0] == ipet2) {
+                // peticio 2 es la primera del viatge 2
+                if(petV1.length > 1 && gasV1[1] == igas1 && petV1[1] == ipet1) {
+                    if(swap_last_first(v1, v2, icam1, icam2)) return true;
+                    else return false;
+                }
+                else return false; // error
+            }
+            else {
+                // peticio 2 es la segona del viatge 2
+                if(petV1.length > 1 && petV2.length > 1 && gasV1[1] == igas1 && petV1[1] == ipet1 && gasV2[1] == igas2 && petV2[1] == ipet2) {
+                    if(swap_last_last(v1, v2, icam1, icam2)) return true;
+                    else return false;
+                }
+                else return false; // error
+            }
+        }
+    }
+
+    public boolean swap_first_first(Viaje v1, Viaje v2, int c1, int c2) {
+        if(v1.canSwap_first(v2.getGas1(), c1) && v2.canSwap_first(v1.getGas1(), c2)) {
+            int g1 = v1.getGas1();
+            int g2 = v2.getGas1();
+            v1.swap_first(g2, c1);
+            v2.swap_first(g1, c2);
+            return true;
+        }
+        else return false;
+    }
+
+    public boolean swap_first_last(Viaje v1, Viaje v2, int c1, int c2) {
+        if(v2.getGas2() > 0 && v1.canSwap_first(v2.getGas2(), c1) && v2.canSwap_last(v1.getGas1(), c2)) {
+            int g1 = v1.getGas1();
+            int g2 = v2.getGas2();
+            v1.swap_first(g2, c1);
+            v2.swap_last(g1, c2);
+            return true;
+        }
+        else return false;
+    }
+
+    public boolean swap_last_last(Viaje v1, Viaje v2, int c1, int c2) {
+        if(v2.getGas2() > 0 && v1.getGas2() > 0 && v1.canSwap_last(v2.getGas2(), c1) && v2.canSwap_last(v1.getGas2(), c2)) {
+            int g1 = v1.getGas2();
+            int g2 = v2.getGas2();
+            v1.swap_last(g2, c1);
+            v2.swap_last(g1, c2);
+            return true;
+        }
+        else return false;
+    }
+
+    public boolean swap_last_first(Viaje v1, Viaje v2, int c1, int c2) {
+        if(v1.getGas2() > 0 && v1.canSwap_last(v2.getGas1(), c1) && v2.canSwap_first(v1.getGas2(), c2)) {
+            int g1 = v1.getGas2();
+            int g2 = v2.getGas1();
+            v1.swap_last(g2, c1);
+            v2.swap_first(g1, c2);
+            return true;
+        }
+        else return false;
     }
 
     class Viaje {
