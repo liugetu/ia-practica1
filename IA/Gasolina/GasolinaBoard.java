@@ -660,8 +660,10 @@ public class GasolinaBoard {
         if(v1.canSwap_first(v2.getGas1(), c1) && v2.canSwap_first(v1.getGas1(), c2)) {
             int g1 = v1.getGas1();
             int g2 = v2.getGas1();
-            v1.swap_first(g2, c1);
-            v2.swap_first(g1, c2);
+            int pet1 = v1.getPeticio(0);
+            int pet2 = v2.getPeticio(0);
+            v1.swap_first(g2, c1, pet2);
+            v2.swap_first(g1, c2, pet1);
             return true;
         }
         else return false;
@@ -671,8 +673,10 @@ public class GasolinaBoard {
         if(v2.getGas2() > 0 && v1.canSwap_first(v2.getGas2(), c1) && v2.canSwap_last(v1.getGas1(), c2)) {
             int g1 = v1.getGas1();
             int g2 = v2.getGas2();
-            v1.swap_first(g2, c1);
-            v2.swap_last(g1, c2);
+            int pet1 = v1.getPeticio(0);
+            int pet2 = v2.getPeticio(1);
+            v1.swap_first(g2, c1, pet2);
+            v2.swap_last(g1, c2, pet1);
             return true;
         }
         else return false;
@@ -682,8 +686,10 @@ public class GasolinaBoard {
         if(v2.getGas2() > 0 && v1.getGas2() > 0 && v1.canSwap_last(v2.getGas2(), c1) && v2.canSwap_last(v1.getGas2(), c2)) {
             int g1 = v1.getGas2();
             int g2 = v2.getGas2();
-            v1.swap_last(g2, c1);
-            v2.swap_last(g1, c2);
+            int pet1 = v1.getPeticio(1);
+            int pet2 = v2.getPeticio(1);
+            v1.swap_last(g2, c1, pet2);
+            v2.swap_last(g1, c2, pet1);
             return true;
         }
         else return false;
@@ -693,8 +699,10 @@ public class GasolinaBoard {
         if(v1.getGas2() > 0 && v1.canSwap_last(v2.getGas1(), c1) && v2.canSwap_first(v1.getGas2(), c2)) {
             int g1 = v1.getGas2();
             int g2 = v2.getGas1();
-            v1.swap_last(g2, c1);
-            v2.swap_first(g1, c2);
+            int pet1 = v1.getPeticio(1);
+            int pet2 = v2.getPeticio(0);
+            v1.swap_last(g2, c1, pet2);
+            v2.swap_first(g1, c2, pet1);
             return true;
         }
         else return false;
@@ -853,30 +861,42 @@ public class GasolinaBoard {
             }
         }
 
-        public void swap_first(int g, int c) {
+        public void swap_first(int g, int c, int pet) {
             if(gasCount == 1) {
                 int km_old = distCentroGas[c][gasVisitadas[0]];
                 int km_new = distCentroGas[c][g];
+                petVisitadas[0] = pet;
                 gasVisitadas[0] = g;
                 kmRecorridos = kmRecorridos - km_old + km_new;
+                kmsPorCamion[c] = kmsPorCamion[c] - km_old + km_new;
+                beneficioActual += (km_old - km_new) * costePorKm;
+                costeTotalKm += (km_new - km_old);
             }
             else {
                 int km_come_old = distCentroGas[c][gasVisitadas[0]];
                 int km_come_new = distCentroGas[c][g];
                 int km_next_old = distGasGas[gasVisitadas[0]][gasVisitadas[1]];
                 int km_next_new = distGasGas[g][gasVisitadas[1]];
+                petVisitadas[0] = pet;
                 gasVisitadas[0] = g;
                 kmRecorridos = kmRecorridos - km_come_old - km_next_old + km_come_new + km_next_new;
+                kmsPorCamion[c] = kmsPorCamion[c] - km_come_old - km_next_old + km_come_new + km_next_new;
+                beneficioActual += (km_come_old + km_next_old - km_come_new - km_next_new) * costePorKm;
+                costeTotalKm += (km_come_new + km_next_new - km_come_old - km_next_old);
             }
         }
 
-        public void swap_last(int g, int c) {
+        public void swap_last(int g, int c, int pet) {
             int km_back_old = distCentroGas[c][gasVisitadas[1]];
             int km_back_new = distCentroGas[c][g];
             int km_prev_old = distGasGas[gasVisitadas[0]][gasVisitadas[1]];
             int km_prev_new = distGasGas[gasVisitadas[0]][g];
+            petVisitadas[1] = pet;
             gasVisitadas[1] = g;
             kmRecorridos = kmRecorridos - km_back_old - km_prev_old + km_back_new + km_prev_new;
+            kmsPorCamion[c] = kmsPorCamion[c] - km_back_old - km_prev_old + km_back_new + km_prev_new;
+            beneficioActual += (km_back_old + km_prev_old - km_back_new - km_prev_new) * costePorKm;
+            costeTotalKm += (km_back_new + km_prev_new - km_back_old - km_prev_old);
         }
 
         // Método para copiar el estado de otro viaje

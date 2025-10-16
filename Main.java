@@ -30,8 +30,8 @@ public class Main {
         System.out.println("Camions: " + board.getNCamions() + ", Gasolineres: " + board.getNGasolineras());
 
         // Pick an initial solution for local search
-        GasolinaBoard initial = board.solIniRandom(); 
-        //GasolinaBoard initial = board.solIniGreedy();
+        //GasolinaBoard initial = board.solIniRandom(); 
+        GasolinaBoard initial = board.solIniGreedy();
         System.out.println("Hem fet l'inicialitzacio");
 
         // Create the Problem object using the chosen initial state
@@ -41,7 +41,7 @@ public class Main {
                                 new GasolinaHeuristicFunction());
         System.out.println("Hem fet el problema");
 
-        // Hill Climbing search (for SA, instantiate SimulatedAnnealingSearch instead)
+        //Hill Climbing search (for SA, instantiate SimulatedAnnealingSearch instead)
         HillClimbingSearch alg = new HillClimbingSearch();
 
         /*
