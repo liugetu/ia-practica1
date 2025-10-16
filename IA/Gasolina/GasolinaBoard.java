@@ -273,6 +273,7 @@ public class GasolinaBoard {
 
     // Intercanvia una petició atesa per una que no ho està
     public boolean intercanvi(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2) {
+        //System.out.println("**Dins d'intercanvi");
         Viaje v = viajesPorCamion.get(icam1).get(iviatje1);
 
         // Determinar si la petició es primera o segona al seu viatje
@@ -307,7 +308,7 @@ public class GasolinaBoard {
         }
 
         // Verificar que els nous kilòmetres no superen el límit diari
-        int kmDiferencia = kmNew - kmOld;
+        int kmDiferencia = kmOld - kmNew;
         if (kmsPorCamion[icam1] + kmDiferencia > limitKmCamioDiari) return false;
 
         // Calcular el canvi en beneficis
@@ -316,9 +317,11 @@ public class GasolinaBoard {
         
         double beneficiOld = getPreuDiposit(pets1.get(ipet1));
         double costOld = kmOld * costePorKm;
+        double costPerduaOld = calcPerdida(pets1.get(ipet1));
         
         double beneficiNew = getPreuDiposit(pets2.get(ipet2));
         double costNew = kmNew * costePorKm;
+        double costPerduaNew = calcPerdida(pets2.get(ipet2));
         
         // Realitzar l'intercanvi
         // Actualitzar les gasolineres visitades i peticions
@@ -333,6 +336,8 @@ public class GasolinaBoard {
         // Actualitzar l'estat de les peticions
         gasolineras_info.get(igas1).second[ipet1] = false; // ja no està atesa
         gasolineras_info.get(igas2).second[ipet2] = true;  // ara està atesa
+
+        // falta restar beneficis de ipet1 calcPerdida
         
         // Actualitzar kilòmetres
         v.kmRecorridos = kmNew;
@@ -340,7 +345,7 @@ public class GasolinaBoard {
         costeTotalKm += kmDiferencia;
         
         // Actualitzar beneficis
-        beneficioActual = beneficioActual - beneficiOld + costOld + beneficiNew - costNew;
+        beneficioActual = beneficioActual - beneficiOld + costOld + beneficiNew - costNew - costPerduaOld + costPerduaNew;
         
         return true;
     }
@@ -778,6 +783,19 @@ public class GasolinaBoard {
             return true;
         }
         else return false;
+    }
+
+    public boolean test(int igas2, int ipet2) {
+        boolean b = false;
+        for (int cam=0; cam < viajesPorCamion.size();cam++) {
+            for (int j=0; j < viajesPorCamion.get(cam).size(); j++) {
+                Viaje iv = viajesPorCamion.get(cam).get(j);
+                for (int v = 0; v < iv.gasCount; v++) {
+                    if (iv.gasVisitadas[v] == igas2 && iv.petVisitadas[v] == ipet2) b=true;
+                }
+            }
+        }
+        return b;
     }
 
     class Viaje {

@@ -23,7 +23,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                         // comprovar que la gasolinera igas conte la peticio ipet
                         if (!((board.gasolineras_info.get(igas).second).length > ipet)) condicions = false; 
                         // la peticio no ha estat atesa encara
-                        if (((board.gasolineras_info.get(igas)).second)[ipet]) condicions = false;
+                        if (board.test(igas, ipet)) condicions = false;
                         // viatje existeix
                         if (!(board.viajesPorCamion.get(icam).size() > iviatje)) condicions = false;
                         // viatje té menys de 2 gasolineres assignades
@@ -67,6 +67,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         System.out.println("Acaba bucle reasignar");
 
         // Operador de swap
+        // icam2 = icam1 + 1, igas1 = igas2 + 1...
         for (int igas1 = 0; igas1 < board.gasolineras.size(); igas1++) {
             for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1).second).length; ipet1++) {
                 for (int icam1 = 0; icam1 < board.viajesPorCamion.size(); icam1++) {
@@ -82,8 +83,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                         if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
                                         if (!((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
                                         // la peticio ha estat atesa
-                                        if (!board.gasolineras_info.get(igas1).second[ipet1]) condicions = false;
-                                        if (!board.gasolineras_info.get(igas2).second[ipet2]) condicions = false;
+                                        if (!board.test(igas1, ipet1)) condicions = false;
+                                        if (!board.test(igas2, ipet2)) condicions = false;
                                         // viatje existeix
                                         if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
                                         if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
@@ -119,17 +120,17 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                 Boolean condicions = true;
                                 // comprovar que la gasolinera igas conte la peticio ipet
                                 if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
-                                if (!((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                                if (condicions && !((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
                                 // Verificar que la petició 1 està atesa
-                                if (!board.gasolineras_info.get(igas1).second[ipet1]) condicions = false;
+                                if (condicions && !board.test(igas1, ipet1)) condicions = false;
                                 // Verificar que la petició 2 NO està atesa
-                                if (board.gasolineras_info.get(igas2).second[ipet2]) condicions = false;
+                                //System.out.println("**Ha passat 3 "+condicions);
+                                if (condicions && board.test(igas2, ipet2)) condicions = false;
                                 // viatje existeix
-                                if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
-                                // que no siguin la meteixa gasolinera
-                                if(igas1 == igas2) condicions = false;
+                                //System.out.println("**Ha passat 4 "+condicions);
+                                if (condicions && !(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
 
-                                if (condicions && board.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
+                                if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
                                     double v = GasolinaHF.getHeuristicValue(newBoard);
                                     //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
 

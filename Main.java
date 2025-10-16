@@ -23,7 +23,7 @@ public class Main {
         // definir un estat final?????? (en busqueda local fa falta?)
 
         // inicialitzar el problema
-        int ngas = 50;
+        int ngas = 100;
         int ncen = 5, mult = 1;
         GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, 3), new Gasolineras(ngas, 5));
 
