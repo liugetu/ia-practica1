@@ -22,7 +22,6 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
             if(k == 0) {
                 int icam, iviatje, igas, ipet;
                 GasolinaBoard newBoard = board.copy();
-                System.out.println("Entrem Afegir");
                 icam = myRandom.nextInt(board.viajesPorCamion.size());
                 iviatje = myRandom.nextInt(board.viajesPorCamion.get(icam).size());
                 igas = myRandom.nextInt(board.gasolineras.size());
@@ -40,19 +39,16 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
 
                     if (condicions && newBoard.addPeticio(igas, ipet, icam, iviatje)) {
                         double v = gasolinaHF.getHeuristicValue(newBoard);
-                        //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
-                        retVal.add(new Successor("hola1", newBoard));
+                        String S = "El camió " + icam + " afegeix la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iviatje + ". Coste(" + v + ")";
+                        retVal.add(new Successor(S, newBoard));
                     }
                     else condicions = false;
                 }
-                System.out.println("Sortim Afegir");
             }
             // Operador de swap
             else if(k == 1) {
                 int icam1, iviatje1, igas1, ipet1, icam2, iviatje2, igas2, ipet2;
                 GasolinaBoard newBoard = board.copy();
-                System.out.println("Entrem swap");
                 icam1 = myRandom.nextInt(board.viajesPorCamion.size());
                 iviatje1 = myRandom.nextInt(board.viajesPorCamion.get(icam1).size());
                 igas1 = myRandom.nextInt(board.gasolineras.size());
@@ -76,26 +72,20 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                         if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
 
                         if (icam1 == icam2 && iviatje1 == iviatje2) condicions = false;
-                        System.out.println("** pre swap");
                         if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
-                            System.out.println("** post swap 1");
                             double v = gasolinaHF.getHeuristicValue(newBoard);
-                            //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
-                            retVal.add(new Successor("hola3", newBoard));
+                            String S = "El camió " + icam1 + " i el camió "+icam2+" s'intercanvien les peticions "+ipet1+" i "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
+                            retVal.add(new Successor(S, newBoard));
                         }
                         else condicions = false;
-                        System.out.println("** post swap 2");
                     }
                     else condicions = false;
                 }
                 else condicions = false;
-                System.out.println("Sortim swap");
             }
             // Operador de reasignar
             else if (k == 2) {
                 GasolinaBoard newBoard = board.copy();
-                System.out.println("Entrem Reasignar");
                 int icam1 = myRandom.nextInt(board.viajesPorCamion.size());
                 int iv = myRandom.nextInt(board.viajesPorCamion.get(icam1).size());
                 int iparada = myRandom.nextInt(board.viajesPorCamion.get(icam1).get(iv).getNGasolineras());
@@ -106,17 +96,14 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                 if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
                     double v = gasolinaHF.getHeuristicValue(newBoard);
                     //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-                    condicions = true; // per sortir del while
-
-                    retVal.add(new Successor("hola2", newBoard));
+                    String S = "El camió " + icam1 + " dona la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iv + " del camió "+icam2+". Coste(" + v + ")";
+                    retVal.add(new Successor(S, newBoard));
                 }
-                System.out.println("Sortim Reasignar");
             }
             else {
                 // operador intercanvi
                 int icam1, iviatje1, igas1, ipet1, igas2, ipet2;
                 GasolinaBoard newBoard = board.copy();
-                System.out.println("Entrem a intercanvi");
                 icam1 = myRandom.nextInt(board.viajesPorCamion.size());
                 iviatje1 = myRandom.nextInt(board.viajesPorCamion.get(icam1).size());
                 igas1 = myRandom.nextInt(board.gasolineras.size());
@@ -142,13 +129,11 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
 
                         if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
                             double v = gasolinaHF.getHeuristicValue(newBoard);
-                            //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
-                            retVal.add(new Successor("hola4", newBoard));
+                            String S = "El camió " + icam1 + " intercanvia la seva petició "+ipet1+" per la petició "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
+                            retVal.add(new Successor(S, newBoard));
                         }
                     }
                 }
-                System.out.println("Acaba bucle intercanvi");
             }
         }
         return retVal;

@@ -559,7 +559,10 @@ public class GasolinaBoard {
             new Comparator<Pair<Pair<Integer, Integer>, Integer>>() {
                 @Override
                 public int compare(Pair<Pair<Integer, Integer>, Integer> a, Pair<Pair<Integer, Integer>, Integer> b) {
-                    if((1000 * ( 100 - Math.pow(2, a.second)) - 1000 * (100 - Math.pow(2, a.second + 1))) < (1000 * (100 - Math.pow(2, b.second)) - 1000 * (100 - Math.pow(2, b.second + 1)))) return 1;
+                    double x, y;
+                    x = getPreuDiposit(a.second) - getPreuDiposit(a.second + 1);
+                    y = getPreuDiposit(b.second) - getPreuDiposit(b.second + 1);
+                    if (x < y) return 1;
                     else return -1;
                 }
             }
@@ -802,7 +805,7 @@ public class GasolinaBoard {
     }
 
     public void printBeneKm() {
-        System.out.println("Beneficis: "+beneficioActual+", km: "+costeTotalKm);
+        System.out.println("Benefici actual: "+beneficioActual+", km: "+costeTotalKm);
     }
 
     class Viaje {

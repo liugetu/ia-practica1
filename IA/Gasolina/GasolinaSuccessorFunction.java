@@ -7,7 +7,8 @@ import java.util.List;
 public class GasolinaSuccessorFunction implements SuccessorFunction {
     @SuppressWarnings("unchecked")
     public List getSuccessors(Object aState) {
-        System.out.println("Hem entrat a successor");
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
         ArrayList retVal = new ArrayList();
         GasolinaBoard board = (GasolinaBoard) aState;
         GasolinaHeuristicFunction GasolinaHF = new GasolinaHeuristicFunction();
@@ -31,16 +32,13 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                         if (condicions && newBoard.addPeticio(igas, ipet, icam, iviatje)) {
                             double v = GasolinaHF.getHeuristicValue(newBoard);
-                            //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
-                            retVal.add(new Successor("hola1", newBoard));
+                            String S = "El camió " + icam + " afegeix la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iviatje + ". Coste(" + v + ")";
+                            retVal.add(new Successor(S, newBoard));
                         }
                     }
                 }
             }
         }
-        System.out.println("Acaba bucle afegir");
-
         
         // successors de l'operador reasignar
         // recorrem totes les peticions (parades) de tots els viatges de tots els camions
@@ -56,15 +54,14 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                             if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
                                 double v = GasolinaHF.getHeuristicValue(newBoard);
-                                //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-                                retVal.add(new Successor("hola2", newBoard));
+                                String S = "El camió " + icam1 + " dona la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iv + " del camió "+icam2+". Coste(" + v + ")";
+                                retVal.add(new Successor(S, newBoard));
                             }
                         }
                     }
                 }
             }
         }
-        System.out.println("Acaba bucle reasignar");
 
         // Operador de swap
         // icam2 = icam1 + 1, igas1 = igas2 + 1...
@@ -93,9 +90,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                                         if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
                                             double v = GasolinaHF.getHeuristicValue(newBoard);
-                                            //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
-                                            retVal.add(new Successor("hola3", newBoard));
+                                            String S = "El camió " + icam1 + " i el camió "+icam2+" s'intercanvien les peticions "+ipet1+" i "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
+                                            retVal.add(new Successor(S, newBoard));
                                         }
                                     }
                                 }
@@ -105,8 +101,6 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
-        System.out.println("Acaba bucle swap");
-
 
         // operador intercanvi
         for (int igas1 = 0; igas1 < board.gasolineras.size(); igas1++) {
@@ -132,9 +126,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                                 if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
                                     double v = GasolinaHF.getHeuristicValue(newBoard);
-                                    //String S = GasolinaBoard.INTERCAMBIO + " " + i + " " + j + " Coste(" + v + ") ---> " + newBoard.toString();
-
-                                    retVal.add(new Successor("hola4", newBoard));
+                                    String S = "El camió " + icam1 + " intercanvia la seva petició "+ipet1+" per la petició "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
+                                    retVal.add(new Successor(S, newBoard));
                                 }
                             }
                         }
@@ -142,8 +135,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                 }
             }
         }
-        System.out.println("Acaba bucle intercanvi");
-
+        board.printBeneKm();
         return retVal;
     }
 }
