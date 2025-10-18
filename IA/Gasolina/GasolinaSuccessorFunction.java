@@ -13,6 +13,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         ArrayList retVal = new ArrayList();
         GasolinaBoard board = (GasolinaBoard) aState;
         GasolinaHeuristicFunction GasolinaHF = new GasolinaHeuristicFunction();
+        double currentValue = GasolinaHF.getHeuristicValue(board);
         //board.printBeneKm();
         
         // Operador d'afegir
@@ -38,8 +39,11 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                         if (condicions && newBoard.addPeticio(igas, ipet, icam, iviatje)) {
                             double v = GasolinaHF.getHeuristicValue(newBoard);
-                            String S = "El camió " + icam + " afegeix la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iviatje + ". Coste(" + v + ")";
-                            retVal.add(new Successor(S, newBoard));
+                            if (v < currentValue) {
+                                String S = "El camió " + icam + " afegeix la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iviatje + ". Coste(" + v + ")";
+                                retVal.add(new Successor(S, newBoard));
+                                return retVal;
+                            }
                         }
                     }
                 }
@@ -60,8 +64,11 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                             if (newBoard.reasignar(icam1, iv, igas, ipet, icam2)) {  // s'ha pogut fer el canvi
                                 double v = GasolinaHF.getHeuristicValue(newBoard);
-                                String S = "El camió " + icam1 + " dona la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iv + " del camió "+icam2+". Coste(" + v + ")";
-                                retVal.add(new Successor(S, newBoard));
+                                if(v < currentValue) {
+                                    String S = "El camió " + icam1 + " dona la petició " + ipet + " de la gasolinera " + igas + " al viatge " + iv + " del camió "+icam2+". Coste(" + v + ")";
+                                    retVal.add(new Successor(S, newBoard));
+                                    return retVal;
+                                }
                             }
                         }
                     }
@@ -95,8 +102,11 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                                         if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
                                             double v = GasolinaHF.getHeuristicValue(newBoard);
-                                            String S = "El camió " + icam1 + " i el camió "+icam2+" s'intercanvien les peticions "+ipet1+" i "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
-                                            retVal.add(new Successor(S, newBoard));
+                                            if(v < currentValue) {
+                                                String S = "El camió " + icam1 + " i el camió " + icam2 + " intercanvien les seves peticions "+ipet1+" i "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
+                                                retVal.add(new Successor(S, newBoard));
+                                                return retVal;
+                                            }
                                         }
                                     }
                                 }
@@ -131,8 +141,11 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
                                 if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
                                     double v = GasolinaHF.getHeuristicValue(newBoard);
-                                    String S = "El camió " + icam1 + " intercanvia la seva petició "+ipet1+" per la petició "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
-                                    retVal.add(new Successor(S, newBoard));
+                                    if(v < currentValue) {
+                                        String S = "El camió " + icam1 + " intercanvia la seva petició "+ipet1+" de la gasolinera " +igas1+" per la petició "+ipet2+" de la gasolinera "+igas2+". Coste(" + v + ")";
+                                        retVal.add(new Successor(S, newBoard));
+                                        return retVal;
+                                    }
                                 }
                             }
                         }
