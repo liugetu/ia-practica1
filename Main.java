@@ -19,52 +19,75 @@ import aima.search.informed.HillClimbingSearch;
 
 public class Main {
     public static void main(String[] args) throws Exception{
-        // generar estat inicial (aleatori/greedy)
-        // definir un estat final?????? (en busqueda local fa falta?)
+        // verificar arguments
+        if (args.length != 2) {
+            System.out.println("Error: es requereixen 2 arguments (0 o 1).");
+            System.out.println("Exemple d'ús: java -cp .:AIMA.jar:Gasolina.jar Main 1 0");
+            return;
+        }
+        int a = Integer.parseInt(args[0]);
+        int b = Integer.parseInt(args[1]);
 
         // inicialitzar el problema
-        int ngas = 100;
+        int ngas = 50;
         int ncen = 5, mult = 1;
         GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, 3), new Gasolineras(ngas, 5));
 
         System.out.println("Camions: " + board.getNCamions() + ", Gasolineres: " + board.getNGasolineras());
 
-        // Pick an initial solution for local search
-        GasolinaBoard initial = board.solIniRandom(); 
-        //GasolinaBoard initial = board.solIniGreedy();
-        System.out.println("Hem fet l'inicialitzacio");
+        String inicialitzacio;
+        GasolinaBoard initial;
+        if (a == 0) { // generar estat inicial aleatori
+            initial = board.solIniRandom(); 
+            inicialitzacio = "random";
+        }
+        else { // generar estat inicial greedy
+            initial = board.solIniGreedy();
+            inicialitzacio = "greedy";
+        }
+        System.out.println("Hem fet la inicialitzacio "+inicialitzacio);
 
-        // Create the Problem object using the chosen initial state
-        Problem p = new Problem(initial,
-                                new GasolinaSuccessorFunction(), // or new GasolinaSuccessorFunctionSA()
-                                new GasolinaGoalTest(),
-                                new GasolinaHeuristicFunction());
-        System.out.println("Hem fet el problema");
+        if (b == 0) {     // hill climbing
+            Problem p = new Problem(initial,
+                                    new GasolinaSuccessorFunction(),
+                                    new GasolinaGoalTest(),
+                                    new GasolinaHeuristicFunction());
 
-        //Hill Climbing search (for SA, instantiate SimulatedAnnealingSearch instead)
-        HillClimbingSearch alg = new HillClimbingSearch();
+            HillClimbingSearch alg = new HillClimbingSearch();
+            System.out.println("Hem fet el HC");
 
-        /*
-        2000: número máximo de iteraciones
-        100: temperatura inicial
-        5: valor de k (parámetro de enfriamiento)
-        0.001: lambda (tasa de enfriamiento)
-        */
-        //SimulatedAnnealingSearch alg = new SimulatedAnnealingSearch(2000, 100, 5, 0.001);
-        System.out.println("Hem fet el HC");
+            SearchAgent agent = new SearchAgent(p, alg);
 
-        // Run the SearchAgent
-        SearchAgent agent = new SearchAgent(p, alg);
-        System.out.println("Hem fet el agent");
+            System.out.println();
+            printActions(agent.getActions());
+            printInstrumentation(agent.getInstrumentation());
 
-        // Print the results of the search
-        System.out.println();
-        printActions(agent.getActions());
-        printInstrumentation(agent.getInstrumentation());
+            // estat final
+            GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
+            System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
+            System.out.println("Fet amb HC i inicialitzacio "+inicialitzacio);
+        }
+        else { // simulated annealing
+            Problem p = new Problem(initial,
+                                    new GasolinaSuccessorFunctionSA(),
+                                    new GasolinaGoalTest(),
+                                    new GasolinaHeuristicFunction());
 
-        // Final state
-        GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
-        System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
+            // SA: param: nº max d'iteracions, temp ini, k, lambda
+            SimulatedAnnealingSearch alg = new SimulatedAnnealingSearch(100000, 1000, 5, 0.01);
+            System.out.println("Hem fet el SA");
+
+            SearchAgent agent = new SearchAgent(p, alg);
+
+            System.out.println();
+            printActions(agent.getActions());
+            printInstrumentation(agent.getInstrumentation());
+
+            // estat final
+            GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
+            System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
+            System.out.println("Fet amb SA i inicialitzacio "+inicialitzacio);
+        }
     }
 
     private static void printInstrumentation(Properties properties) {
@@ -77,9 +100,17 @@ public class Main {
     }
     
     private static void printActions(List actions) {
+        if (actions == null || actions.isEmpty()) {
+            System.out.println("No actions to print (local search doesn't track action sequence)");
+            return;
+        }
         for (int i = 0; i < actions.size(); i++) {
-            String action = (String) actions.get(i);
-            System.out.println(action);
+            Object action = actions.get(i);
+            if (action instanceof String) {
+                System.out.println(action);
+            } else {
+                System.out.println("Action " + i + ": " + action.getClass().getSimpleName());
+            }
         }
     }
 }

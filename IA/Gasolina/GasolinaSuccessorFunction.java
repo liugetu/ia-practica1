@@ -48,7 +48,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         for (int icam1 = 0; icam1 < board.getNCamions(); icam1++) {
             for (int iv = 0; iv < board.getNViajesCamion(icam1); iv++) {
                 for (int iparada = 0; iparada < board.getNParadasViaje(icam1, iv); iparada++) {
-                    for (int icam2 = 0; icam2 < board.getNCamions(); icam2++) {
+                    for (int icam2 = icam1 + 1; icam2 < board.getNCamions(); icam2++) {
                         if (icam1 != icam2) {
                             GasolinaBoard newBoard = board.copy();
                             int igas = board.getGasolineraViaje(icam1, iv, iparada);

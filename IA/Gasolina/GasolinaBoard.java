@@ -336,8 +336,6 @@ public class GasolinaBoard {
         // Actualitzar l'estat de les peticions
         gasolineras_info.get(igas1).second[ipet1] = false; // ja no està atesa
         gasolineras_info.get(igas2).second[ipet2] = true;  // ara està atesa
-
-        // falta restar beneficis de ipet1 calcPerdida
         
         // Actualitzar kilòmetres
         v.kmRecorridos = kmNew;
@@ -345,7 +343,9 @@ public class GasolinaBoard {
         kmsPorCamion[icam1] += deltaKm;
         costeTotalKm += deltaKm;
         
-        // Actualitzar beneficis
+        // actualitzar beneficis (intercanvi atesa <-> no atesa):
+        // abans: pet1 atesa (+ingres1 - costOld), pet2 no atesa (-perdua2)
+        // despres: pet1 no atesa (-perdua1), pet2 atesa (+ingres2 - costNew)
         beneficioActual = beneficioActual - beneficiOld + costOld + beneficiNew - costNew - costPerduaOld + costPerduaNew;
         
         return true;
