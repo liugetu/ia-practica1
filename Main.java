@@ -41,9 +41,17 @@ public class Main {
             initial = board.solIniRandom(); 
             inicialitzacio = "random";
         }
-        else { // generar estat inicial greedy
+        else if (a == 1) { // generar estat inicial greedy 1
             initial = board.solIniGreedy();
-            inicialitzacio = "greedy";
+            inicialitzacio = "greedy1";
+        }
+        else if (a == 2){ // greedy 2
+            initial = board.solIniGreedy2();
+            inicialitzacio = "greedy2";
+        }
+        else {  // sol ini "buida"
+            initial = board;
+            inicialitzacio = "buida";
         }
         System.out.println("Hem fet la inicialitzacio "+inicialitzacio);
 

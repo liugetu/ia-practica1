@@ -58,7 +58,6 @@ public class GasolinaBoard {
 
     /* Constructor */
     public GasolinaBoard(ArrayList<Distribucion> camions, ArrayList<Gasolinera> gasolineras) {
-        System.out.println("Hem entrat a la constructora de board");
         this.camions = camions;
         this.gasolineras = gasolineras;
 
