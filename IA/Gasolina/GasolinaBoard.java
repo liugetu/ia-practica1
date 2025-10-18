@@ -808,6 +808,106 @@ public class GasolinaBoard {
         System.out.println("Benefici actual: "+beneficioActual+", km: "+costeTotalKm);
     }
 
+    // Imprimeix tot l'estat del board de manera detallada
+    public void printEstatComplet() {
+        System.out.println("\n" + "=".repeat(80));
+        System.out.println("ESTAT COMPLET DEL BOARD");
+        System.out.println("=".repeat(80));
+        
+        // Resum global
+        System.out.println("\n--- RESUM GLOBAL ---");
+        System.out.println("Benefici actual: " + String.format("%.2f", beneficioActual));
+        System.out.println("Kilòmetres totals: " + costeTotalKm);
+        System.out.println("Nombre de camions: " + camions.size());
+        System.out.println("Nombre de gasolineres: " + gasolineras.size());
+        
+        // Comptar peticions ateses i no ateses
+        int petAteses = 0, petNoAteses = 0;
+        for (int i = 0; i < gasolineras_info.size(); i++) {
+            boolean[] flags = gasolineras_info.get(i).second;
+            for (boolean atesa : flags) {
+                if (atesa) petAteses++;
+                else petNoAteses++;
+            }
+        }
+        System.out.println("Peticions ateses: " + petAteses);
+        System.out.println("Peticions no ateses: " + petNoAteses);
+        System.out.println("Total peticions: " + (petAteses + petNoAteses));
+        
+        // Informació per cada camió
+        System.out.println("\n" + "=".repeat(80));
+        System.out.println("INFORMACIÓ DELS CAMIONS I ELS SEUS VIATGES");
+        System.out.println("=".repeat(80));
+        
+        for (int ic = 0; ic < camions.size(); ic++) {
+            Distribucion centre = camions.get(ic);
+            ArrayList<Viaje> viatges = viajesPorCamion.get(ic);
+            
+            System.out.println("\n--- CAMIÓ " + ic + " ---");
+            System.out.println("Centre de distribució: (" + centre.getCoordX() + ", " + centre.getCoordY() + ")");
+            System.out.println("Km totals del camió: " + kmsPorCamion[ic] + " / " + limitKmCamioDiari);
+            System.out.println("Nombre de viatges: " + viatges.size() + " / " + limitViatgesCamio);
+            
+            if (viatges.isEmpty()) {
+                System.out.println("  (No té cap viatge assignat)");
+            } else {
+                for (int iv = 0; iv < viatges.size(); iv++) {
+                    Viaje v = viatges.get(iv);
+                    System.out.println("\n  Viatge " + iv + ":");
+                    System.out.println("    Km del viatge: " + v.getKmRecorridos());
+                    System.out.println("    Nombre de parades: " + v.getNGasolineras());
+                    
+                    for (int ip = 0; ip < v.getNGasolineras(); ip++) {
+                        int igas = v.getGasolinera(ip);
+                        int ipet = v.getPeticio(ip);
+                        Gasolinera gas = gasolineras.get(igas);
+                        int diesPend = gas.getPeticiones().get(ipet);
+                        
+                        System.out.println("    Parada " + (ip + 1) + ":");
+                        System.out.println("      Gasolinera " + igas + ": (" + gas.getCoordX() + ", " + gas.getCoordY() + ")");
+                        System.out.println("      Petició " + ipet + ": " + diesPend + " dies pendent");
+                        System.out.println("      Benefici: " + String.format("%.2f", getPreuDiposit(diesPend)));
+                    }
+                }
+            }
+        }
+        
+        // Informació de les gasolineres i les seves peticions
+        System.out.println("\n" + "=".repeat(80));
+        System.out.println("ESTAT DE LES GASOLINERES I LES SEVES PETICIONS");
+        System.out.println("=".repeat(80));
+        
+        for (int ig = 0; ig < gasolineras.size(); ig++) {
+            Gasolinera gas = gasolineras.get(ig);
+            boolean[] ateses = gasolineras_info.get(ig).second;
+            ArrayList<Integer> pets = gas.getPeticiones();
+            
+            System.out.println("\n--- GASOLINERA " + ig + " ---");
+            System.out.println("Coordenades: (" + gas.getCoordX() + ", " + gas.getCoordY() + ")");
+            System.out.println("Nombre de peticions: " + pets.size());
+            
+            for (int ip = 0; ip < pets.size(); ip++) {
+                int diesPend = pets.get(ip);
+                boolean atesa = ateses[ip];
+                String estatStr = atesa ? "ATESA" : "NO ATESA";
+                double preu = getPreuDiposit(diesPend);
+                
+                System.out.print("  Petició " + ip + ": " + diesPend + " dies pendent");
+                System.out.print(" | Benefici: " + String.format("%.2f", preu));
+                System.out.print(" | " + estatStr);
+                
+                if (!atesa) {
+                    double perdua = calcPerdida(diesPend);
+                    System.out.print(" | Pèrdua si no s'atén avui: " + String.format("%.2f", perdua));
+                }
+                
+                System.out.println();
+            }
+        }
+        
+        System.out.println("\n" + "=".repeat(80) + "\n");
+    }
+
     class Viaje {
         int kmRecorridos;
         int[] gasVisitadas = new int[2];

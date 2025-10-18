@@ -64,8 +64,8 @@ public class Main {
 
             // estat final
             GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
+            goal.printEstatComplet();
             System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
-            
             System.out.println("Fet amb HC i inicialitzacio "+inicialitzacio);
         }
         else { // simulated annealing
@@ -86,6 +86,7 @@ public class Main {
 
             // estat final
             GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
+            goal.printEstatComplet();
             System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
             System.out.println("Fet amb SA i inicialitzacio "+inicialitzacio);
         }
