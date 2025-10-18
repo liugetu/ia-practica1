@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.ArrayList;
+import java.util.Random;
 import aima.search.informed.SimulatedAnnealingSearch;
 import aima.search.informed.HillClimbingSearch;
 
@@ -29,9 +30,12 @@ public class Main {
         int b = Integer.parseInt(args[1]);
 
         // inicialitzar el problema
-        int ngas = 50;
-        int ncen = 5, mult = 1;
-        GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, 3), new Gasolineras(ngas, 5));
+        int ngas = 100;
+        int ncen = 10, mult = 1;
+        Random myRandom = new Random();
+        int seed1 = myRandom.nextInt(1234);
+        int seed2 = myRandom.nextInt(1234);
+        GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, seed1), new Gasolineras(ngas, seed2));
 
         System.out.println("Camions: " + board.getNCamions() + ", Gasolineres: " + board.getNGasolineras());
 
