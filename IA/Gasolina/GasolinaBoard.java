@@ -624,6 +624,92 @@ public class GasolinaBoard {
         return board;
     }
 
+    public GasolinaBoard solIniGreedy2() {
+        GasolinaBoard board = this;
+
+        // inicialitzar viatges per camio (buits)
+        for (int i = 0; i < camions.size(); i++) board.viajesPorCamion.get(i).clear();
+
+        PriorityQueue<Pair<Pair<Integer, Integer>, Integer>> peticions = new PriorityQueue<Pair<Pair<Integer, Integer>, Integer>>(
+            new Comparator<Pair<Pair<Integer, Integer>, Integer>>() {
+                @Override
+                public int compare(Pair<Pair<Integer, Integer>, Integer> a, Pair<Pair<Integer, Integer>, Integer> b) {
+                    double x, y;
+                    x = getPreuDiposit(a.second) - getPreuDiposit(a.second + 1);
+                    y = getPreuDiposit(b.second) - getPreuDiposit(b.second + 1);
+                    if (x < y) return 1;
+                    else return -1;
+                }
+            }
+        );
+
+        for (int ig = 0; ig < gasolineras.size(); ig++) {
+            ArrayList<Integer> pets = gasolineras.get(ig).getPeticiones();
+            for (int ip = 0; ip < pets.size(); ip++) peticions.add(new Pair<>(new Pair<>(ig, ip), pets.get(ip)));
+        }
+
+        // Inicializar km de cada viaje de los camiones a 0
+        board.kmsPorCamion = new int[camions.size()];
+        for (int i = 0; i < camions.size(); i++) board.kmsPorCamion[i] = 0;
+
+        
+
+        while (peticions.size() > 0) {
+            Pair<Pair<Integer, Integer>, Integer> top = peticions.peek();
+            int igIdx = top.first.first;
+            int ipIdx = top.first.second;
+
+            // prefer the nearest camion to this gasolinera
+            int preferredCamion = getCamionMinGasolineras(igIdx);
+            boolean assigned = false;
+
+            // try preferred camion first, then others in round-robin
+            for (int offset = 0; offset < camions.size() && !assigned; offset++) {
+                int i = (preferredCamion + offset) % camions.size();
+                int km;
+                if (kmsPorCamion[i] == 0) {
+                    km = 2 * distCentroGas[i][igIdx];
+                    if (kmsPorCamion[i] + km <= limitKmCamioDiari) {
+                        addGasolineraAViaje(igIdx, km, ipIdx, i);
+                        kmsPorCamion[i] += km;
+                        registrarPeticioAtesa(igIdx, ipIdx, km);
+                        peticions.poll();
+                        assigned = true;
+                    }
+                } else {
+                    Viaje lastViaje = viajesPorCamion.get(i).get(viajesPorCamion.get(i).size() - 1);
+                    if (lastViaje.exit()) {
+                        int lastIdx = lastViaje.getIndexLastGas();
+                        int kmAfegits = -distCentroGas[i][lastIdx] + distGasGas[lastIdx][igIdx] + distCentroGas[i][igIdx];
+                        if (kmsPorCamion[i] + kmAfegits <= limitKmCamioDiari) {
+                            lastViaje.addGasolinera(igIdx, kmAfegits, ipIdx);
+                            kmsPorCamion[i] += kmAfegits;
+                            registrarPeticioAtesa(igIdx, ipIdx, kmAfegits);
+                            peticions.poll();
+                            assigned = true;
+                        }
+                    } else {
+                        km = 2 * distCentroGas[i][igIdx];
+                        if (kmsPorCamion[i] + km <= limitKmCamioDiari) {
+                            addGasolineraAViaje(igIdx, km, ipIdx, i);
+                            kmsPorCamion[i] += km;
+                            registrarPeticioAtesa(igIdx, ipIdx, km);
+                            peticions.poll();
+                            assigned = true;
+                        }
+                    }
+                }
+            }
+
+            // if not assigned to any camion, remove it (it remains unserved)
+            if (!assigned) {
+                peticions.poll();
+            }
+        }
+        board.penalitzarPeticionsNoAteses();
+        return board;
+    }
+
     // helpers per viajesPorCamion
 
     public int countViajesCamion(int idCamio) {
@@ -691,6 +777,20 @@ public class GasolinaBoard {
         return true;
     }
     */
+
+    public int getCamionMinGasolineras(int gasolinera) {
+       int minCamion = 0;
+       int min_dist = Integer.MAX_VALUE;
+
+        for (int i = 0; i < camions.size(); i++) {
+            if(distCentroGas[i][gasolinera] < min_dist) {
+               min_dist = distCentroGas[i][gasolinera];
+               minCamion = i;
+            }
+        }
+
+       return minCamion;
+    }
 
    // swap de peticions entre viatges de camions
     public boolean swap(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2, int icam2, int iviatje2) {
