@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Random;
 
 public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
+
+    public static final int limitViatgesCamio = 5;
+
     public List getSuccessors(Object aState) {
         ArrayList                retVal = new ArrayList();
         GasolinaBoard             board  = (GasolinaBoard) aState;
@@ -24,7 +27,7 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                 int icam, iviatje, igas, ipet;
                 GasolinaBoard newBoard = board.copy();
                 icam = myRandom.nextInt(board.viajesPorCamion.size());
-                iviatje = myRandom.nextInt(5);  // Valor random entre 0 i 4
+                iviatje = myRandom.nextInt(limitViatgesCamio);  // Valor random entre 0 i 4
                 igas = myRandom.nextInt(board.gasolineras.size());
                 int nPet = board.getNPeticionsGasolinera(igas);
                 if (nPet > 0) {

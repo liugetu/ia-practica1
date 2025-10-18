@@ -54,6 +54,7 @@ public class GasolinaBoard {
 
     // Informació de control
     double beneficioActual; // V = beneficis per pet ateses - costos kms camions - perdues pet no ateses
+    double beneficiAvui; // V = beneficis per pet ateses avui - costos kms camions 
     int costeTotalKm; // total km de tots els viatges
 
     /* Constructor */
@@ -68,6 +69,7 @@ public class GasolinaBoard {
         }
 
         this.beneficioActual = 0;
+        this.beneficiAvui = 0;
         this.costeTotalKm = 0;
 
         kmsPorCamion = new int[camions.size()];
@@ -113,6 +115,7 @@ public class GasolinaBoard {
 
         // Copiar valores primitivos
         this.beneficioActual = other.beneficioActual;
+        this.beneficiAvui = other.beneficiAvui;
         this.costeTotalKm = other.costeTotalKm;
 
         // Copia profunda del array de kilómetros por camión
@@ -148,14 +151,6 @@ public class GasolinaBoard {
     @return Una nueva instancia de GasolinaBoard con el mismo estado*/
     public GasolinaBoard copy() {
         return new GasolinaBoard(this);}
-
-
-    // no-arg constructor for helper/factory methods
-    /*public GasolinaBoard() {
-        this.viajes = new ArrayList<>();
-        this.beneficioActual = 0;
-        this.costeTotalKm = 0;
-    }*/
 
     /* Operadors */
     /* 
@@ -346,6 +341,7 @@ public class GasolinaBoard {
         // abans: pet1 atesa (+ingres1 - costOld), pet2 no atesa (-perdua2)
         // despres: pet1 no atesa (-perdua1), pet2 atesa (+ingres2 - costNew)
         beneficioActual = beneficioActual - beneficiOld + costOld + beneficiNew - costNew - costPerduaOld + costPerduaNew;
+        beneficiAvui = beneficiAvui - beneficiOld + costOld + beneficiNew - costNew;
         
         return true;
     }
@@ -394,6 +390,10 @@ public class GasolinaBoard {
 
     public double getBeneficio() {
         return beneficioActual;
+    }
+
+    public double getBeneficiAvui() {
+        return beneficiAvui;
     }
 
     public int getKm() {
@@ -453,6 +453,7 @@ public class GasolinaBoard {
         double ingres = getPreuDiposit(diesPend);
         double costeViaje = kmAfegits * costePorKm;
         this.beneficioActual += ingres - costeViaje;
+        this.beneficiAvui += ingres - costeViaje;
         this.costeTotalKm += kmAfegits;
     }
 
@@ -916,6 +917,7 @@ public class GasolinaBoard {
         // Resum global
         System.out.println("\n--- RESUM GLOBAL ---");
         System.out.println("Benefici actual: " + String.format("%.2f", beneficioActual));
+        System.out.println("Benefici avui: " + String.format("%.2f", beneficiAvui));
         System.out.println("Kilòmetres totals: " + costeTotalKm);
         System.out.println("Nombre de camions: " + camions.size());
         System.out.println("Nombre de gasolineres: " + gasolineras.size());
@@ -1169,6 +1171,7 @@ public class GasolinaBoard {
                 kmRecorridos = kmRecorridos - km_old + km_new;
                 kmsPorCamion[c] = kmsPorCamion[c] - km_old + km_new;
                 beneficioActual += (km_old - km_new) * costePorKm;
+                beneficiAvui += (km_old - km_new) * costePorKm;
                 costeTotalKm += (km_new - km_old);
             }
             else {
@@ -1181,6 +1184,7 @@ public class GasolinaBoard {
                 kmRecorridos = kmRecorridos - km_come_old - km_next_old + km_come_new + km_next_new;
                 kmsPorCamion[c] = kmsPorCamion[c] - km_come_old - km_next_old + km_come_new + km_next_new;
                 beneficioActual += (km_come_old + km_next_old - km_come_new - km_next_new) * costePorKm;
+                beneficiAvui += (km_come_old + km_next_old - km_come_new - km_next_new) * costePorKm;
                 costeTotalKm += (km_come_new + km_next_new - km_come_old - km_next_old);
             }
         }
@@ -1195,6 +1199,7 @@ public class GasolinaBoard {
             kmRecorridos = kmRecorridos - km_back_old - km_prev_old + km_back_new + km_prev_new;
             kmsPorCamion[c] = kmsPorCamion[c] - km_back_old - km_prev_old + km_back_new + km_prev_new;
             beneficioActual += (km_back_old + km_prev_old - km_back_new - km_prev_new) * costePorKm;
+            beneficiAvui += (km_back_old + km_prev_old - km_back_new - km_prev_new) * costePorKm;
             costeTotalKm += (km_back_new + km_prev_new - km_back_old - km_prev_old);
         }
 

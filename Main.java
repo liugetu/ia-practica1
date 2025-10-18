@@ -74,6 +74,7 @@ public class Main {
             GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
             goal.printEstatComplet();
             System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
+            System.out.println("Final benefit avui: " + goal.getBeneficiAvui());
             System.out.println("Fet amb HC i inicialitzacio "+inicialitzacio);
         }
         else { // simulated annealing
@@ -96,6 +97,7 @@ public class Main {
             GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
             goal.printEstatComplet();
             System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
+            System.out.println("Final benefit avui: " + goal.getBeneficiAvui());
             System.out.println("Fet amb SA i inicialitzacio "+inicialitzacio);
         }
     }

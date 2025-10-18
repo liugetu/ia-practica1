@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GasolinaSuccessorFunction implements SuccessorFunction {
+    
+    public static final int limitViatgesCamio = 5;
+
     @SuppressWarnings("unchecked")
     public List getSuccessors(Object aState) {
         ArrayList retVal = new ArrayList();
@@ -16,7 +19,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         for (int igas = 0; igas < board.getNGasolineras(); igas++) {
             for (int ipet = 0; ipet < board.getNPeticionsGasolinera(igas); ipet++) {
                 for (int icam = 0; icam < board.viajesPorCamion.size(); icam++) {
-                    for (int iviatje = 0; iviatje < 5; iviatje++) {
+                    for (int iviatje = 0; iviatje < limitViatgesCamio; iviatje++) {
                         GasolinaBoard newBoard = board.copy();
                         
                         Boolean condicions = true;
