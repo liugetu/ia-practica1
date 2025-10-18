@@ -7,7 +7,6 @@ import java.util.List;
 public class GasolinaSuccessorFunction implements SuccessorFunction {
     @SuppressWarnings("unchecked")
     public List getSuccessors(Object aState) {
-        System.out.print("\033[H\033[2J");
         System.out.flush();
         ArrayList retVal = new ArrayList();
         GasolinaBoard board = (GasolinaBoard) aState;
@@ -46,7 +45,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         for (int icam1 = 0; icam1 < board.getNCamions(); icam1++) {
             for (int iv = 0; iv < board.getNViajesCamion(icam1); iv++) {
                 for (int iparada = 0; iparada < board.getNParadasViaje(icam1, iv); iparada++) {
-                    for (int icam2 = icam1 + 1; icam2 < board.getNCamions(); icam2++) {
+                    for (int icam2 = 0; icam2 < board.getNCamions(); icam2++) {
                         if (icam1 != icam2) {
                             GasolinaBoard newBoard = board.copy();
                             int igas = board.getGasolineraViaje(icam1, iv, iparada);
@@ -64,14 +63,13 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         }
 
         // Operador de swap
-        // icam2 = icam1 + 1, igas1 = igas2 + 1...
         for (int igas1 = 0; igas1 < board.gasolineras.size(); igas1++) {
             for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1).second).length; ipet1++) {
                 for (int icam1 = 0; icam1 < board.viajesPorCamion.size(); icam1++) {
                     for (int iviatje1 = 0; iviatje1 < board.viajesPorCamion.get(icam1).size(); iviatje1++) {
                         for (int igas2 = 0; igas2 < board.gasolineras.size(); igas2++) {
                             for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2).second).length; ipet2++) {
-                                for (int icam2 = 0; icam2 < board.viajesPorCamion.size(); icam2++) {
+                                for (int icam2 = icam1; icam2 < board.viajesPorCamion.size(); icam2++) {
                                     for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).size(); iviatje2++) {
                                         GasolinaBoard newBoard = board.copy();
                                         
