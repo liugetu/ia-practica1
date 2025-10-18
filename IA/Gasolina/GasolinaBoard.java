@@ -905,7 +905,7 @@ public class GasolinaBoard {
     }
 
     public void printBeneKm() {
-        System.out.println("Benefici actual: "+beneficioActual+", km: "+costeTotalKm);
+        System.out.println("Benefici actual (avui): "+beneficiAvui+", km: "+costeTotalKm);
     }
 
     // Imprimeix tot l'estat del board de manera detallada

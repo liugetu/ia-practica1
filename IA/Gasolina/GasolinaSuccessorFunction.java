@@ -13,7 +13,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         ArrayList retVal = new ArrayList();
         GasolinaBoard board = (GasolinaBoard) aState;
         GasolinaHeuristicFunction GasolinaHF = new GasolinaHeuristicFunction();
-        board.printBeneKm();
+        //board.printBeneKm();
         
         // Operador d'afegir
         for (int igas = 0; igas < board.getNGasolineras(); igas++) {

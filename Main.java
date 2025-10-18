@@ -53,7 +53,6 @@ public class Main {
             initial = board;
             inicialitzacio = "buida";
         }
-        System.out.println("Hem fet la inicialitzacio "+inicialitzacio);
 
         if (b == 0) {     // hill climbing
             Problem p = new Problem(initial,
@@ -62,7 +61,6 @@ public class Main {
                                     new GasolinaHeuristicFunction());
 
             HillClimbingSearch alg = new HillClimbingSearch();
-            System.out.println("Hem fet el HC");
 
             SearchAgent agent = new SearchAgent(p, alg);
 
@@ -72,9 +70,8 @@ public class Main {
 
             // estat final
             GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
-            goal.printEstatComplet();
-            System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
-            System.out.println("Final benefit avui: " + goal.getBeneficiAvui());
+            //goal.printEstatComplet();
+            System.out.println("Final benefit: " + goal.getBeneficiAvui() + ", km: " + goal.getKm());
             System.out.println("Fet amb HC i inicialitzacio "+inicialitzacio);
         }
         else { // simulated annealing
@@ -85,7 +82,6 @@ public class Main {
 
             // SA: param: nº max d'iteracions, temp ini, k, lambda
             SimulatedAnnealingSearch alg = new SimulatedAnnealingSearch(100000, 1000, 5, 0.01);
-            System.out.println("Hem fet el SA");
 
             SearchAgent agent = new SearchAgent(p, alg);
 
@@ -95,9 +91,8 @@ public class Main {
 
             // estat final
             GasolinaBoard goal = (GasolinaBoard) alg.getGoalState();
-            goal.printEstatComplet();
-            System.out.println("Final benefit: " + goal.getBeneficio() + ", km: " + goal.getKm());
-            System.out.println("Final benefit avui: " + goal.getBeneficiAvui());
+            //goal.printEstatComplet();
+            System.out.println("Final benefit: " + goal.getBeneficiAvui() + ", km: " + goal.getKm());
             System.out.println("Fet amb SA i inicialitzacio "+inicialitzacio);
         }
     }
