@@ -125,6 +125,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
             }
         }
 
+        counter = 0;
+
         // operador intercanvi
         for (int igas1 = 0; igas1 < board.gasolineras.size() && counter < limit; igas1++) {
             for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1).second).length && counter < limit; ipet1++) {
