@@ -29,7 +29,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                         
                         Boolean condicions = true;
                         // comprovar que la gasolinera igas conte la peticio ipet
-                        if (!((newBoard.gasolineras_info.get(igas).second).length > ipet)) condicions = false; 
+                        if (!((newBoard.gasolineras_info.get(igas)).length > ipet)) condicions = false; 
                         // la peticio no ha estat atesa encara
                         if (newBoard.test(igas, ipet)) condicions = false;
                         
@@ -85,11 +85,11 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
         // Operador de swap
         for (int igas1 = 0; igas1 < board.gasolineras.size() && counter < limit; igas1++) {
-            for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1).second).length && counter < limit; ipet1++) {
+            for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1)).length && counter < limit; ipet1++) {
                 for (int icam1 = 0; icam1 < board.viajesPorCamion.size() && counter < limit; icam1++) {
                     for (int iviatje1 = 0; iviatje1 < board.viajesPorCamion.get(icam1).size() && counter < limit; iviatje1++) {
                         for (int igas2 = 0; igas2 < board.gasolineras.size() && counter < limit; igas2++) {
-                            for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2).second).length && counter < limit; ipet2++) {
+                            for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2)).length && counter < limit; ipet2++) {
                                 for (int icam2 = icam1; icam2 < board.viajesPorCamion.size() && counter < limit; icam2++) {
                                     for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).size() && counter < limit; iviatje2++) {
                                         ++counter;
@@ -97,8 +97,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                         
                                         Boolean condicions = true;
                                         // comprovar que la gasolinera igas conte la peticio ipet
-                                        if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
-                                        if (!((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                                        if (!((board.gasolineras_info.get(igas1)).length > ipet1)) condicions = false; 
+                                        if (!((board.gasolineras_info.get(igas2)).length > ipet2)) condicions = false; 
                                         // la peticio ha estat atesa
                                         if (!board.test(igas1, ipet1)) condicions = false;
                                         if (!board.test(igas2, ipet2)) condicions = false;
@@ -129,18 +129,18 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
         // operador intercanvi
         for (int igas1 = 0; igas1 < board.gasolineras.size() && counter < limit; igas1++) {
-            for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1).second).length && counter < limit; ipet1++) {
+            for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1)).length && counter < limit; ipet1++) {
                 for (int icam1 = 0; icam1 < board.viajesPorCamion.size() && counter < limit; icam1++) {
                     for (int iviatje1 = 0; iviatje1 < board.viajesPorCamion.get(icam1).size() && counter < limit; iviatje1++) {
                         for (int igas2 = 0; igas2 < board.gasolineras.size() && counter < limit; igas2++) {
-                            for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2).second).length && counter < limit; ipet2++) {
+                            for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2)).length && counter < limit; ipet2++) {
                                 GasolinaBoard newBoard = board.copy();
                                 ++counter;
                                         
                                 Boolean condicions = true;
                                 // comprovar que la gasolinera igas conte la peticio ipet
-                                if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
-                                if (condicions && !((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                                if (!((board.gasolineras_info.get(igas1)).length > ipet1)) condicions = false; 
+                                if (condicions && !((board.gasolineras_info.get(igas2)).length > ipet2)) condicions = false; 
                                 // Verificar que la petició 1 està atesa
                                 if (condicions && !board.test(igas1, ipet1)) condicions = false;
                                 // Verificar que la petició 2 NO està atesa

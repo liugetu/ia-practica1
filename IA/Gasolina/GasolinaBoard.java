@@ -40,7 +40,7 @@ public class GasolinaBoard {
     static ArrayList<Gasolinera> gasolineras;       // coord. i peticions de cada gasolinera
 
     // informacio de cada gasolinera: array de que si cada peticio ha estat atesa
-    static ArrayList<Pair<Gasolinera, boolean[]>> gasolineras_info;
+    static ArrayList<boolean[]> gasolineras_info;
 
     // distancies precalculades de centre a gasolinera
     static int[][] distCentroGas;
@@ -79,7 +79,7 @@ public class GasolinaBoard {
                 Gasolinera g = this.gasolineras.get(i);
                 int mida = g.getPeticiones().size();
                 boolean[] flags = new boolean[mida];
-                gasolineras_info.add(new Pair<>(g, flags));
+                gasolineras_info.add(flags);
             }
         }
 
@@ -211,7 +211,7 @@ public class GasolinaBoard {
     // post: retorna true si s'ha pogut reassignar la peticio, false altrament
     public boolean reasignar(int icam1, int iviaje1, int igas, int ipet, int icam2) {
         // comprovar que la gasolinera igas conte la peticio ipet
-        if (ipet < 0 || igas < 0 || igas >= gasolineras_info.size() || ipet >= (gasolineras_info.get(igas).second).length) return false; // error
+        if (ipet < 0 || igas < 0 || igas >= gasolineras_info.size() || ipet >= (gasolineras_info.get(igas)).length) return false; // error
 
         // provar d'afegir la peticio ipet de la gasolina igas al camio icam2
         ArrayList<Viaje> viajesAsignadas = viajesPorCamion.get(icam2);
@@ -327,8 +327,8 @@ public class GasolinaBoard {
         }
         
         // Actualitzar l'estat de les peticions
-        gasolineras_info.get(igas1).second[ipet1] = false; // ja no està atesa
-        gasolineras_info.get(igas2).second[ipet2] = true;  // ara està atesa
+        gasolineras_info.get(igas1)[ipet1] = false; // ja no està atesa
+        gasolineras_info.get(igas2)[ipet2] = true;  // ara està atesa
         
         // Actualitzar kilòmetres
         v.kmRecorridos = kmNew;
@@ -364,7 +364,7 @@ public class GasolinaBoard {
     }
 
     public int getNPeticionsGasolinera(int igas) {
-        return (gasolineras_info.get(igas).second).length;
+        return (gasolineras_info.get(igas)).length;
     }
 
     public int getNViajesCamion(int icam) {
@@ -459,7 +459,7 @@ public class GasolinaBoard {
     // penalitzar les peticions no ateses avui (despres d'haver assignat els viatges)
     public void penalitzarPeticionsNoAteses() {
         for (int gi = 0; gi < gasolineras.size(); gi++) {
-            boolean[] flags = gasolineras_info.get(gi).second;
+            boolean[] flags = gasolineras_info.get(gi);
             ArrayList<Integer> pets = gasolineras.get(gi).getPeticiones();
             for (int ip = 0; ip < pets.size(); ip++) {
                 if (!flags[ip]) {  // no atesa
@@ -868,7 +868,7 @@ public class GasolinaBoard {
         // Comptar peticions ateses i no ateses
         int petAteses = 0, petNoAteses = 0;
         for (int i = 0; i < gasolineras_info.size(); i++) {
-            boolean[] flags = gasolineras_info.get(i).second;
+            boolean[] flags = gasolineras_info.get(i);
             for (boolean atesa : flags) {
                 if (atesa) petAteses++;
                 else petNoAteses++;
@@ -923,7 +923,7 @@ public class GasolinaBoard {
         
         for (int ig = 0; ig < gasolineras.size(); ig++) {
             Gasolinera gas = gasolineras.get(ig);
-            boolean[] ateses = gasolineras_info.get(ig).second;
+            boolean[] ateses = gasolineras_info.get(ig);
             ArrayList<Integer> pets = gas.getPeticiones();
             
             System.out.println("\n--- GASOLINERA " + ig + " ---");
@@ -981,7 +981,7 @@ public class GasolinaBoard {
             gasVisitadas[gasCount] = g;
             petVisitadas[gasCount] = ipeticion;
             gasCount++;
-            gasolineras_info.get(g).second[ipeticion] = true;
+            gasolineras_info.get(g)[ipeticion] = true;
             kmRecorridos += km;
             return true;
         }
@@ -1055,7 +1055,7 @@ public class GasolinaBoard {
                 gasVisitadas[gasCount - 1] = -1;
                 petVisitadas[gasCount - 1] = -1;
                 gasCount--;
-                gasolineras_info.get(g).second[ipeticion] = false;
+                gasolineras_info.get(g)[ipeticion] = false;
                 return true;
             }
             else return false;
