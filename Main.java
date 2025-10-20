@@ -87,6 +87,7 @@ public class Main {
             List<Object> acciones = null;
             Properties instrumentacion = null;
 
+            long startTime = System.nanoTime();
             if (b == 0) {     // hill climbing
                 Problem p = new Problem(initial,
                                         new GasolinaSuccessorFunction(),
@@ -114,6 +115,11 @@ public class Main {
                 acciones = agent.getActions();
                 instrumentacion = agent.getInstrumentation();
             }
+
+            // imprimir temps d'execucio
+            long elapsedNs = System.nanoTime() - startTime;
+            double elapsedMs = elapsedNs / 1_000_000.0;
+            System.out.println("Temps execució (ms): " + String.format("%.3f", elapsedMs));
 
             // Evaluar si este resultado es mejor que el anterior
             double beneficioActual = resultado.getBeneficiAvui();
