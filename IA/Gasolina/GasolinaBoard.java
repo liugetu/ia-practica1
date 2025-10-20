@@ -11,17 +11,6 @@ import java.lang.Math;
 import java.util.PriorityQueue;
 import java.util.Comparator;
 
-// Simple Pair class
-class Pair<T, U> {
-    public final T first;
-    public final U second;
-
-    public Pair(T first, U second) {
-        this.first = first;
-        this.second = second;
-    }
-}
-
 public class GasolinaBoard {
     /* Class independent from AIMA classes
        - It has to implement the state of the problem and its operators
@@ -35,26 +24,25 @@ public class GasolinaBoard {
 
     /* Atributs */
 
-    // Centres i gasolineres (fixes, poden ser estàtiques per estalviar memòria)
-    static ArrayList<Distribucion> camions;         // coord. dels centres de distribució (si un centre te multiples camions, les seves coords. apareixen repetides)
-    static ArrayList<Gasolinera> gasolineras;       // coord. i peticions de cada gasolinera
+    // centres i gasolineres
+    static ArrayList<Distribucion> camions; // coord. dels centres de distribucio (si un centre te multiples camions, les seves coords. apareixen repetides)
+    static ArrayList<Gasolinera> gasolineras; // coord. i peticions de cada gasolinera
 
     // informacio de cada gasolinera: array de que si cada peticio ha estat atesa
     static ArrayList<boolean[]> gasolineras_info;
 
     // distancies precalculades de centre a gasolinera
     static int[][] distCentroGas;
-    // distancies precalculades entre gasolineres (simetrica)
+    // distancies precalculades entre gasolineres (matriu simetrica)
     static int[][] distGasGas;
 
-    // Assignació de peticions a viatges per camió
+    // assignacio de peticions a viatges per camio
     ArrayList<ArrayList<Viaje>> viajesPorCamion;  // index exterior = idCamio
     int[] kmsPorCamion;  // els kms que ha fet cada camio (total dels seus viatges)
 
-    // Informació de control
-    double beneficioActual; // V = beneficis per pet ateses - costos kms camions - perdues pet no ateses
+    double beneficioActual; // V = beneficis per pet ateses - costos kms camions - perdues pet no ateses (per l'heuristica)
     double beneficiAvui; // V = beneficis per pet ateses avui - costos kms camions 
-    int costeTotalKm; // total km de tots els viatges
+    int costeTotalKm; // total km de tots els viatges de tots els camions
 
     /* Constructor */
     public GasolinaBoard(ArrayList<Distribucion> camions, ArrayList<Gasolinera> gasolineras) {

@@ -14,7 +14,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         GasolinaBoard board = (GasolinaBoard) aState;
         GasolinaHeuristicFunction GasolinaHF = new GasolinaHeuristicFunction();
         double currentValue = GasolinaHF.getHeuristicValue(board);
-        //board.printBeneKm();
+        board.printBeneKm();
         int counter = 0;
         int limit = 1000000;
         
@@ -23,13 +23,10 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
             for (int ipet = 0; ipet < board.getNPeticionsGasolinera(igas) && counter < limit; ipet++) {
                 for (int icam = 0; icam < board.viajesPorCamion.size() && counter < limit; icam++) {
                     for (int iviatje = 0; iviatje < limitViatgesCamio && counter < limit; iviatje++) {
-                        GasolinaBoard newBoard = board.copy();
-
                         ++counter;
+                        GasolinaBoard newBoard = board.copy();
                         
                         Boolean condicions = true;
-                        // comprovar que la gasolinera igas conte la peticio ipet
-                        if (!((newBoard.gasolineras_info.get(igas)).length > ipet)) condicions = false; 
                         // la peticio no ha estat atesa encara
                         if (newBoard.test(igas, ipet)) condicions = false;
                         
@@ -56,6 +53,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
 
         counter = 0;
         
+        // comentem l'operador reasignar perque no s'arriba a utilitzar
         // successors de l'operador reasignar
         // recorrem totes les peticions (parades) de tots els viatges de tots els camions
         // i provem d'assignar-les a tots els camions
@@ -83,37 +81,48 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
             }
         }*/
 
-        // Operador de swap
+        // operadors de intercanvi + swap (per aprofitar el bucle)
         for (int igas1 = 0; igas1 < board.gasolineras.size() && counter < limit; igas1++) {
             for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1)).length && counter < limit; ipet1++) {
                 for (int icam1 = 0; icam1 < board.viajesPorCamion.size() && counter < limit; icam1++) {
                     for (int iviatje1 = 0; iviatje1 < board.viajesPorCamion.get(icam1).size() && counter < limit; iviatje1++) {
                         for (int igas2 = 0; igas2 < board.gasolineras.size() && counter < limit; igas2++) {
                             for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2)).length && counter < limit; ipet2++) {
-                                for (int icam2 = icam1; icam2 < board.viajesPorCamion.size() && counter < limit; icam2++) {
-                                    for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).size() && counter < limit; iviatje2++) {
-                                        ++counter;
-                                        GasolinaBoard newBoard = board.copy();
-                                        
-                                        Boolean condicions = true;
-                                        // comprovar que la gasolinera igas conte la peticio ipet
-                                        if (!((board.gasolineras_info.get(igas1)).length > ipet1)) condicions = false; 
-                                        if (!((board.gasolineras_info.get(igas2)).length > ipet2)) condicions = false; 
-                                        // la peticio ha estat atesa
-                                        if (!board.test(igas1, ipet1)) condicions = false;
-                                        if (!board.test(igas2, ipet2)) condicions = false;
-                                        // viatje existeix
-                                        if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
-                                        if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
+                                // apliquem operador intercanvi
+                                GasolinaBoard newBoard = board.copy();
+                                Boolean condicions = true;
+                                
+                                // verificar que la peticio 1 està atesa
+                                if (!board.test(igas1, ipet1)) condicions = false;
+                                // verificar que la peticio 2 NO està atesa
+                                if (condicions && board.test(igas2, ipet2)) condicions = false;
 
-                                        if (icam1 == icam2 && iviatje1 == iviatje2) condicions = false;
+                                if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
+                                    double v = GasolinaHF.getHeuristicValue(newBoard);
+                                    if (v < currentValue) {
+                                        String S = "El camió " + icam1 + " intercanvia la seva petició "+ipet1+" de la gasolinera " +igas1+" per la petició "+ipet2+" de la gasolinera "+igas2+". Coste(" + v + ")";
+                                        retVal.add(new Successor(S, newBoard));
+                                        return retVal;
+                                    }
+                                }                        
+                                
+                                // seguim bucles per l'operador swap NOMES si ipet1 i ipet2 estan ateses
+                                if (board.test(igas1, ipet1) && board.test(igas2, ipet2)) {
+                                    for (int icam2 = icam1; icam2 < board.viajesPorCamion.size() && counter < limit; icam2++) {
+                                        for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).size() && counter < limit; iviatje2++) {
+                                            ++counter;
+                                            newBoard = board.copy();
 
-                                        if (condicions && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
-                                            double v = GasolinaHF.getHeuristicValue(newBoard);
-                                            if(v < currentValue) {
-                                                String S = "El camió " + icam1 + " i el camió " + icam2 + " intercanvien les seves peticions "+ipet1+" i "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
-                                                retVal.add(new Successor(S, newBoard));
-                                                return retVal;
+                                            // comprovar que no siguin el mateix viatge del mateix camio
+                                            boolean cond2 = (icam1 == icam2 && iviatje1 == iviatje2);
+
+                                            if (!cond2 && newBoard.swap(igas1, ipet1, icam1, iviatje1, igas2, ipet2, icam2, iviatje2)) {
+                                                double v = GasolinaHF.getHeuristicValue(newBoard);
+                                                if (v < currentValue) {
+                                                    String S = "El camió " + icam1 + " i el camió " + icam2 + " intercanvien les seves peticions "+ipet1+" i "+ipet2+" de les gasolineres " +igas1+" i "+igas2+", respectivament. Coste(" + v + ")";
+                                                    retVal.add(new Successor(S, newBoard));
+                                                    return retVal;
+                                                }
                                             }
                                         }
                                     }
@@ -125,7 +134,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
             }
         }
 
-        counter = 0;
+        /*counter = 0;
 
         // operador intercanvi
         for (int igas1 = 0; igas1 < board.gasolineras.size() && counter < limit; igas1++) {
@@ -144,10 +153,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                 // Verificar que la petició 1 està atesa
                                 if (condicions && !board.test(igas1, ipet1)) condicions = false;
                                 // Verificar que la petició 2 NO està atesa
-                                //System.out.println("**Ha passat 3 "+condicions);
                                 if (condicions && board.test(igas2, ipet2)) condicions = false;
                                 // viatje existeix
-                                //System.out.println("**Ha passat 4 "+condicions);
                                 if (condicions && !(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
 
                                 if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
@@ -163,7 +170,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                     }
                 }
             }
-        }
+        }*/
         return retVal;
     }
 }

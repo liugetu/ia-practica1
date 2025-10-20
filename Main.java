@@ -23,7 +23,7 @@ public class Main {
     public static void main(String[] args) throws Exception{
         // verificar arguments
         if (args.length != 3) {
-            System.out.println("Error: es requereixen 3 arguments (0 o 1).");
+            System.out.println("Error: es requereixen 3 arguments.");
             System.out.println("Exemple d'ús: java -cp .:AIMA.jar:Gasolina.jar Main 1 0 10");
             return;
         }
@@ -137,22 +137,21 @@ public class Main {
             System.out.println();
         }
         
-        String algoritmo = (b == 0) ? "HC" : "SA";
-        System.out.println("Fet amb " + algoritmo + " i inicialitzacio " + inicialitzacio);
-        System.out.println();
-        
         System.out.println("Accions del millor resultat:");
         printActions(mejoresAcciones);
         System.out.println();
-        
-        System.out.println("Instrumentació del millor resultat:");
-        printInstrumentation(mejorInstrumentacion);
 
         // Mostrar el mejor resultado encontrado
         System.out.println("===============================================");
         System.out.println("MILLOR RESULTAT TROBAT:");
         System.out.println("Execució: " + mejorEjecucion + " de " + NUMERO_EJECUCIONES);
+        printInstrumentation(mejorInstrumentacion);
         System.out.println("Final benefit: " + mejorResultado.getBeneficiAvui() + ", km: " + mejorResultado.getKm());
+        System.out.println();
+
+        // informacio sobre l'execucio
+        String algoritmo = (b == 0) ? "HC" : "SA";
+        System.out.println("Fet amb " + algoritmo + " i inicialització " + inicialitzacio+", amb "+ngas+" gasolineres, "+ncen+" centres i multiplicitat "+mult);
         
         //mejorResultado.printEstatComplet();
     }
