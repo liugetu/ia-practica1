@@ -16,7 +16,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         double currentValue = GasolinaHF.getHeuristicValue(board);
         //board.printBeneKm();
         int counter = 0;
-        int limit = 10000000;
+        int limit = 1000000;
         
         // Operador d'afegir
         for (int igas = 0; igas < board.getNGasolineras() && counter < limit; igas++) {
@@ -59,7 +59,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         // successors de l'operador reasignar
         // recorrem totes les peticions (parades) de tots els viatges de tots els camions
         // i provem d'assignar-les a tots els camions
-        for (int icam1 = 0; icam1 < board.getNCamions() && counter < limit; icam1++) {
+        /*for (int icam1 = 0; icam1 < board.getNCamions() && counter < limit; icam1++) {
             for (int iv = 0; iv < board.getNViajesCamion(icam1) && counter < limit; iv++) {
                 for (int iparada = 0; iparada < board.getNParadasViaje(icam1, iv) && counter < limit; iparada++) {
                     for (int icam2 = 0; icam2 < board.getNCamions() && counter < limit; icam2++) {
@@ -81,7 +81,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                     }
                 }
             }
-        }
+        }*/
 
         // Operador de swap
         for (int igas1 = 0; igas1 < board.gasolineras.size() && counter < limit; igas1++) {

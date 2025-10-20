@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Collections;
 import java.util.PriorityQueue;
-//import javafx.util.Pair;
 import java.lang.Math;
 import java.util.PriorityQueue;
 import java.util.Comparator;
@@ -721,62 +720,6 @@ public class GasolinaBoard {
         for (Viaje v : viajesPorCamion.get(idCamio)) suma += v.getKmRecorridos();
         return suma;
     }
-
-    // swap de peticions entre viatges de camions
-    /*public boolean swap(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2, int icam2, int iviatje2) {
-        Viaje v1 = viajesPorCamion.get(icam1).get(iviatje1);
-        Viaje v2 = viajesPorCamion.get(icam2).get(iviatje2);
-
-        // Determinar si cada petición es primera o segunda en su viaje
-        boolean isPrimera1 = (v1.getGasVisitadas()[0] == igas1 && v1.getPetVisitadas()[0] == ipet1);
-        boolean isPrimera2 = (v2.getGasVisitadas()[0] == igas2 && v2.getPetVisitadas()[0] == ipet2);
-
-        // Realizar swap según la posición de cada petición
-        if (isPrimera1 && isPrimera2) {
-            return swapPeticiones(v1, v2, icam1, icam2, true, true);
-        } else if (isPrimera1 && !isPrimera2) {
-            return swapPeticiones(v1, v2, icam1, icam2, true, false);
-        } else if (!isPrimera1 && isPrimera2) {
-            return swapPeticiones(v1, v2, icam1, icam2, false, true);
-        } else {
-            return swapPeticiones(v1, v2, icam1, icam2, false, false);
-        }
-    }
-
-    private boolean swapPeticiones(Viaje v1, Viaje v2, int c1, int c2, boolean isPrimera1, boolean isPrimera2) {
-        // Obtener gasolineras según posición
-        int g1 = isPrimera1 ? v1.getGas1() : v1.getGas2();
-        int g2 = isPrimera2 ? v2.getGas1() : v2.getGas2();
-        
-        // Verificar que las gasolineras existen (especialmente para posición segunda)
-        if ((!isPrimera1 && g1 <= 0) || (!isPrimera2 && g2 <= 0)) {
-            return false;
-        }
-
-        // Verificar si el swap es posible
-        boolean canSwapV1 = isPrimera1 ? v1.canSwap_first(g2, c1) : v1.canSwap_last(g2, c1);
-        boolean canSwapV2 = isPrimera2 ? v2.canSwap_first(g1, c2) : v2.canSwap_last(g1, c2);
-        
-        if (!canSwapV1 || !canSwapV2) {
-            return false;
-        }
-
-        // Realizar el swap
-        if (isPrimera1) {
-            v1.swap_first(g2, c1);
-        } else {
-            v1.swap_last(g2, c1);
-        }
-        
-        if (isPrimera2) {
-            v2.swap_first(g1, c2);
-        } else {
-            v2.swap_last(g1, c2);
-        }
-        
-        return true;
-    }
-    */
 
     public int getCamionMinGasolineras(int gasolinera) {
        int minCamion = 0;

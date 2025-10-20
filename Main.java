@@ -32,8 +32,8 @@ public class Main {
         int NUMERO_EJECUCIONES = Integer.parseInt(args[2]);
         
         // inicialitzar el problema
-        int ngas = 500;
-        int ncen = 50, mult = 1;
+        int ngas = 100;
+        int ncen = 10, mult = 1;
         //System.out.println("Camions: " + board.getNCamions() + ", Gasolineres: " + board.getNGasolineras());
         //System.out.println("Executant " + NUMERO_EJECUCIONES + " vegades per trobar el millor resultat...\n");
 
@@ -63,6 +63,7 @@ public class Main {
             Random myRandom = new Random();
             int seed1 = myRandom.nextInt(1234);
             int seed2 = myRandom.nextInt(1234);
+            //GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, 1234), new Gasolineras(ngas, 1234));
             GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, seed1), new Gasolineras(ngas, seed2));
 
             System.out.println("=== Execució " + ejecucion + " ===");
