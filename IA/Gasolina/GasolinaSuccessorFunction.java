@@ -11,7 +11,8 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
     
     // Constructor que acepta un límite personalizado
     public GasolinaSuccessorFunction(int limit) {
-        this.limit = limit;
+        // Si el límite es -1, eliminar la restricción (establecer a infinito)
+        this.limit = (limit == -1) ? Integer.MAX_VALUE : limit;
     }
 
     @SuppressWarnings("unchecked")

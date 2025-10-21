@@ -27,7 +27,7 @@ public class Main {
             System.out.println("Exemple d'ús: java -cp .:AIMA.jar:Gasolina.jar Main {inicialitzacio} {algorisme} {num_execucions} {limit} [seed]");
             System.out.println("inicialitzacio: 0=random, 1=greedy1, 2=greedy2, 3=buida");
             System.out.println("algorisme: 0=hill climbing, 1=simulated annealing");
-            System.out.println("limit: límit d'iteracions per a la funció successora");
+            System.out.println("limit: límit d'iteracions per a la funció successora (-1 per a sense límit)");
             return;
         }
         int a = Integer.parseInt(args[0]);
