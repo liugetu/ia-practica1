@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.Collections;
 import java.util.PriorityQueue;
 import java.lang.Math;
-import java.util.PriorityQueue;
 import java.util.Comparator;
 
 public class GasolinaBoard {
@@ -43,6 +42,20 @@ public class GasolinaBoard {
     double beneficioActual; // V = beneficis per pet ateses - costos kms camions - perdues pet no ateses (per l'heuristica)
     double beneficiAvui; // V = beneficis per pet ateses avui - costos kms camions 
     int costeTotalKm; // total km de tots els viatges de tots els camions
+
+    // retorna la distancia entre una gasolinera i un centre
+    public int getDistancia(Gasolinera g, Distribucion d) {
+        int x = Math.abs(g.getCoordX() - d.getCoordX());
+        int y = Math.abs(g.getCoordY() - d.getCoordY());
+        return x + y;
+    }
+
+    // retorna la distancia entre dues gasolineres
+    public int getDistancia(Gasolinera g1, Gasolinera g2) {
+        int x = Math.abs(g1.getCoordX() - g2.getCoordX());
+        int y = Math.abs(g1.getCoordY() - g2.getCoordY());
+        return x + y;
+    }
 
     /* Constructor */
     public GasolinaBoard(ArrayList<Distribucion> camions, ArrayList<Gasolinera> gasolineras) {
@@ -92,31 +105,23 @@ public class GasolinaBoard {
     }
 
 
-    /* Copy Constructor - Crea una copia profunda del estado actual */
-    /**
-     
-    Constructor de copia que crea una nueva instancia de GasolinaBoard
-    con el mismo estado que la instancia proporcionada.
-    @param other La instancia de GasolinaBoard a copiar*/
-    public GasolinaBoard(GasolinaBoard other) {// Las variables estáticas camions, gasolineras, distCentroGas, distGasGas no necesitan ser copiadas // ya que son compartidas y son inmutables una vez inicializadas
-
-        // Copiar valores primitivos
+    // constructora copia: crea una copia total del estado actual
+    public GasolinaBoard(GasolinaBoard other) { // las variables estaticas no necesitan ser copiadas
         this.beneficioActual = other.beneficioActual;
         this.beneficiAvui = other.beneficiAvui;
         this.costeTotalKm = other.costeTotalKm;
 
-        // Copia profunda del array de kilómetros por camión
         this.kmsPorCamion = new int[other.kmsPorCamion.length];
         System.arraycopy(other.kmsPorCamion, 0, this.kmsPorCamion, 0, other.kmsPorCamion.length);
 
-        // Copia profunda de viajesPorCamion
+        // copia de viajesPorCamion
         this.viajesPorCamion = new ArrayList<>();
         for (int i = 0; i < other.viajesPorCamion.size(); i++) {
             ArrayList<Viaje> viajesOriginales = other.viajesPorCamion.get(i);
             ArrayList<Viaje> nuevosViajes = new ArrayList<>();
 
             for (Viaje viajeOriginal : viajesOriginales) {
-                // Crear una copia del viaje
+                // copia del viaje
                 Viaje nuevoViaje = new Viaje();
                 nuevoViaje.copyFrom(viajeOriginal);
                 nuevosViajes.add(nuevoViaje);
@@ -124,22 +129,15 @@ public class GasolinaBoard {
 
             this.viajesPorCamion.add(nuevosViajes);
         }
-
-        // NOTA: gasolineras_info es estático y se modifica durante la ejecución,
-        // por lo que para una copia completa del estado se debería copiar también.
-        // Sin embargo, al ser estático, las modificaciones afectarían a todas las instancias.
-        // Si se necesita una copia independiente, habría que cambiar gasolineras_info 
-        // de static a instance variable.
     }
 
-    /**
-     
-    Método de conveniencia que retorna una nueva instancia copiada
-    @return Una nueva instancia de GasolinaBoard con el mismo estado*/
+    // retorna una copia completa del board
     public GasolinaBoard copy() {
-        return new GasolinaBoard(this);}
+        return new GasolinaBoard(this);
+    }
 
     /* Operadors */
+
     /* 
      * PRE: la peticio no ha estat atesa encara, el viatge iviaje del camio icam existeix i te menys de 2 gasolineres
      * POST: Afegir peticio ipet de la gasolinera igas al viatge iviaje del camio icam
@@ -147,11 +145,6 @@ public class GasolinaBoard {
     public boolean addPeticio(int igas, int ipet, int icam, int iviaje) {
         Viaje v = viajesPorCamion.get(icam).get(iviaje);
         int kmAfegits;
-
-        // comprovar que la gasolinera igas conte la peticio ipet
-        //if ((gasolineras_info.get(igas).second).length > ipet) return false; // error
-        // la peticio no ha estat atesa encara
-        //if (!gasolineras_info.get(igas).second.get(ipet)) return false; // error
         
         if (v.gasCount == 0) {  // cas d'haver creat un viatge nou (buit)
             kmAfegits = 2 * distCentroGas[icam][igas];
@@ -252,25 +245,23 @@ public class GasolinaBoard {
         else return false;
     }
 
-    // Intercanvia una petició atesa per una que no ho està
+    // operador d'intercanviar una petició atesa per una que no ho està
     public boolean intercanvi(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2) {
-        //System.out.println("**Dins d'intercanvi");
         Viaje v = viajesPorCamion.get(icam1).get(iviatje1);
 
-        // Determinar si la petició es primera o segona al seu viatje
+        // determinar si la petició es primera o segona al seu viatje
         boolean isPrimera = (v.getGasVisitadas()[0] == igas1 && v.getPetVisitadas()[0] == ipet1);
         if (!isPrimera && v.gasCount < 2) return false; // La petició no és la segona si no hi ha segona parada
         if (!isPrimera && !(v.getGasVisitadas()[1] == igas1 && v.getPetVisitadas()[1] == ipet1)) return false;
 
-        // Calcular els nous kilòmetres si es fa l'intercanvi
+        // calc els nous kilòmetres si es fa l'intercanvi
         int kmOld = v.getKmRecorridos();
         int kmNew;
         
         if (v.gasCount == 1) {
-            // Només hi ha una parada, es canvia per la nova gasolinera
+            // només hi ha una parada, es canvia per la nova gasolinera
             kmNew = 2 * distCentroGas[icam1][igas2];
-        } else {
-            // Hi ha dues parades
+        } else { // Hi ha dues parades
             if (isPrimera) {
                 // Canviar la primera parada
                 int kmCentreOld = distCentroGas[icam1][igas1];
@@ -304,8 +295,8 @@ public class GasolinaBoard {
         double costNew = kmNew * costePorKm;
         double costPerduaNew = calcPerdida(pets2.get(ipet2));
         
-        // Realitzar l'intercanvi
-        // Actualitzar les gasolineres visitades i peticions
+        // realitzar l'intercanvi
+        // actualitzar les gasolineres visitades i peticions
         if (isPrimera) {
             v.gasVisitadas[0] = igas2;
             v.petVisitadas[0] = ipet2;
@@ -314,34 +305,24 @@ public class GasolinaBoard {
             v.petVisitadas[1] = ipet2;
         }
         
-        // Actualitzar l'estat de les peticions
+        // actualitzar l'estat de les peticions
         gasolineras_info.get(igas1)[ipet1] = false; // ja no està atesa
         gasolineras_info.get(igas2)[ipet2] = true;  // ara està atesa
         
-        // Actualitzar kilòmetres
+        // actualitzar kilòmetres
         v.kmRecorridos = kmNew;
         int deltaKm = kmNew - kmOld;
         kmsPorCamion[icam1] += deltaKm;
         costeTotalKm += deltaKm;
         
-        // actualitzar beneficis (intercanvi atesa <-> no atesa):
-        // abans: pet1 atesa (+ingres1 - costOld), pet2 no atesa (-perdua2)
-        // despres: pet1 no atesa (-perdua1), pet2 atesa (+ingres2 - costNew)
+        // actualitzar beneficis (intercanvi atesa <-> no atesa)
         beneficioActual = beneficioActual - beneficiOld + costOld + beneficiNew - costNew - costPerduaOld + costPerduaNew;
         beneficiAvui = beneficiAvui - beneficiOld + costOld + beneficiNew - costNew;
         
         return true;
     }
 
-    /* Heuristic function */
-    public double heuristic(){
-        return 0;
-    }
-
-    /* Goal test */
-    /*public boolean is_goal(){
-        return false;
-    }*/
+    /* Getters dels atributs */
 
     public int getNCamions() {
         return camions.size();
@@ -387,24 +368,33 @@ public class GasolinaBoard {
         return costeTotalKm;
     }
 
-    // Some functions will be needed for creating a copy of the state
+    /* helpers per viajesPorCamion */
 
-    public int [] getConfiguration() {
-        //return board;
-        return new int[0];
+    public int countViajesCamion(int idCamio) {
+        return viajesPorCamion.get(idCamio).size();
     }
 
-    public int getDistancia(Gasolinera g, Distribucion d) {
-        int x = Math.abs(g.getCoordX() - d.getCoordX());
-        int y = Math.abs(g.getCoordY() - d.getCoordY());
-        return x + y;
+    public int kmsCamio(int idCamio) {
+        int suma = 0;
+        for (Viaje v : viajesPorCamion.get(idCamio)) suma += v.getKmRecorridos();
+        return suma;
     }
 
-    public int getDistancia(Gasolinera g1, Gasolinera g2) {
-        int x = Math.abs(g1.getCoordX() - g2.getCoordX());
-        int y = Math.abs(g1.getCoordY() - g2.getCoordY());
-        return x + y;
+    public int getCamionMinGasolineras(int gasolinera) {
+       int minCamion = 0;
+       int min_dist = Integer.MAX_VALUE;
+
+        for (int i = 0; i < camions.size(); i++) {
+            if(distCentroGas[i][gasolinera] < min_dist) {
+               min_dist = distCentroGas[i][gasolinera];
+               minCamion = i;
+            }
+        }
+
+       return minCamion;
     }
+
+    /* Càlculs */
 
     // retorna el preu d'un diposit d'una peticio que porta diesPnd dies pendent
     // pre: diesPnd >= 0
@@ -456,6 +446,14 @@ public class GasolinaBoard {
                 }
             }
         }
+    }
+
+    // mira si la peticio ipet de igas esta atesa
+    public boolean isPeticioAtesa(int igas, int ipet) {
+        if (igas < 0 || igas >= gasolineras_info.size()) return false;
+        boolean[] flags = gasolineras_info.get(igas);
+        if (ipet < 0 || ipet >= flags.length) return false;
+        return flags[ipet];
     }
 
     /* Solucions inicials */
@@ -611,6 +609,7 @@ public class GasolinaBoard {
         return board;
     }
 
+    // manera 2 de generar una solucio inicial greedy
     public GasolinaBoard solIniGreedy2() {
         GasolinaBoard board = this;
 
@@ -646,11 +645,11 @@ public class GasolinaBoard {
             int igIdx = top.first.first;
             int ipIdx = top.first.second;
 
-            // prefer the nearest camion to this gasolinera
+            // es prefereix el camio mes aprop a aquesta gasolinera
             int preferredCamion = getCamionMinGasolineras(igIdx);
             boolean assigned = false;
 
-            // try preferred camion first, then others in round-robin
+            // provar 1r el camio preferit, i despres els altres amb round-robin
             for (int offset = 0; offset < camions.size() && !assigned; offset++) {
                 int i = (preferredCamion + offset) % camions.size();
                 int km;
@@ -688,7 +687,7 @@ public class GasolinaBoard {
                 }
             }
 
-            // if not assigned to any camion, remove it (it remains unserved)
+            // si no s'ha assignat a cap camio, eliminar-lo
             if (!assigned) {
                 peticions.poll();
             }
@@ -697,33 +696,7 @@ public class GasolinaBoard {
         return board;
     }
 
-    // helpers per viajesPorCamion
-
-    public int countViajesCamion(int idCamio) {
-        return viajesPorCamion.get(idCamio).size();
-    }
-
-    public int kmsCamio(int idCamio) {
-        int suma = 0;
-        for (Viaje v : viajesPorCamion.get(idCamio)) suma += v.getKmRecorridos();
-        return suma;
-    }
-
-    public int getCamionMinGasolineras(int gasolinera) {
-       int minCamion = 0;
-       int min_dist = Integer.MAX_VALUE;
-
-        for (int i = 0; i < camions.size(); i++) {
-            if(distCentroGas[i][gasolinera] < min_dist) {
-               min_dist = distCentroGas[i][gasolinera];
-               minCamion = i;
-            }
-        }
-
-       return minCamion;
-    }
-
-   // swap de peticions entre viatges de camions
+    // swap de peticions entre viatges de camions
     public boolean swap(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2, int icam2, int iviatje2) {
         Viaje v1 = viajesPorCamion.get(icam1).get(iviatje1);
         Viaje v2 = viajesPorCamion.get(icam2).get(iviatje2);
@@ -769,6 +742,8 @@ public class GasolinaBoard {
             }
         }
     }
+
+    /* Helpers pel swap */
 
     public boolean swap_first_first(Viaje v1, Viaje v2, int c1, int c2) {
         if(v1.canSwap_first(v2.getGas1(), c1) && v2.canSwap_first(v1.getGas1(), c2)) {
@@ -822,30 +797,17 @@ public class GasolinaBoard {
         else return false;
     }
 
-    public boolean test(int igas2, int ipet2) {
-        boolean b = false;
-        for (int cam=0; cam < viajesPorCamion.size();cam++) {
-            for (int j=0; j < viajesPorCamion.get(cam).size(); j++) {
-                Viaje iv = viajesPorCamion.get(cam).get(j);
-                for (int v = 0; v < iv.gasCount; v++) {
-                    if (iv.gasVisitadas[v] == igas2 && iv.petVisitadas[v] == ipet2) b=true;
-                }
-            }
-        }
-        return b;
-    }
-
+    // imprimir benefici actual i kms
     public void printBeneKm() {
         System.out.println("Benefici actual (avui): "+beneficiAvui+", km: "+costeTotalKm);
     }
 
-    // Imprimeix tot l'estat del board de manera detallada
+    // imprimeix tot l'estat del board de manera detallada
+    // per debuguejar
     public void printEstatComplet() {
         System.out.println("\n" + "=".repeat(80));
         System.out.println("ESTAT COMPLET DEL BOARD");
         System.out.println("=".repeat(80));
-        
-        // Resum global
         System.out.println("\n--- RESUM GLOBAL ---");
         System.out.println("Benefici actual: " + String.format("%.2f", beneficioActual));
         System.out.println("Benefici avui: " + String.format("%.2f", beneficiAvui));
@@ -853,7 +815,7 @@ public class GasolinaBoard {
         System.out.println("Nombre de camions: " + camions.size());
         System.out.println("Nombre de gasolineres: " + gasolineras.size());
         
-        // Comptar peticions ateses i no ateses
+        // comptar peticions ateses i no ateses
         int petAteses = 0, petNoAteses = 0;
         for (int i = 0; i < gasolineras_info.size(); i++) {
             boolean[] flags = gasolineras_info.get(i);
@@ -866,7 +828,7 @@ public class GasolinaBoard {
         System.out.println("Peticions no ateses: " + petNoAteses);
         System.out.println("Total peticions: " + (petAteses + petNoAteses));
         
-        // Informació per cada camió
+        // informació per cada camió
         System.out.println("\n" + "=".repeat(80));
         System.out.println("INFORMACIÓ DELS CAMIONS I ELS SEUS VIATGES");
         System.out.println("=".repeat(80));
@@ -904,7 +866,7 @@ public class GasolinaBoard {
             }
         }
         
-        // Informació de les gasolineres i les seves peticions
+        // informacio de les gasolineres i les seves peticions
         System.out.println("\n" + "=".repeat(80));
         System.out.println("ESTAT DE LES GASOLINERES I LES SEVES PETICIONS");
         System.out.println("=".repeat(80));
@@ -939,6 +901,8 @@ public class GasolinaBoard {
         
         System.out.println("\n" + "=".repeat(80) + "\n");
     }
+
+    /* Classe Viaje */
 
     class Viaje {
         int kmRecorridos;
@@ -1134,12 +1098,10 @@ public class GasolinaBoard {
             costeTotalKm += (km_back_new + km_prev_new - km_back_old - km_prev_old);
         }
 
-        // Método para copiar el estado de otro viaje
+        // metodo para copiar el estado de otro viaje
         public void copyFrom(Viaje other) {
             this.kmRecorridos = other.kmRecorridos;
             this.gasCount = other.gasCount;
-
-            // Copiar arrays
             System.arraycopy(other.gasVisitadas, 0, this.gasVisitadas, 0, this.gasVisitadas.length);
             System.arraycopy(other.petVisitadas, 0, this.petVisitadas, 0, this.petVisitadas.length);
         }

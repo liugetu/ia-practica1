@@ -33,9 +33,9 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                 if (nPet > 0) {
                     ipet = myRandom.nextInt(board.getNPeticionsGasolinera(igas));
                     // comprovar que la gasolinera igas conte la peticio ipet
-                    if (!((newBoard.gasolineras_info.get(igas).second).length > ipet)) condicions = false; 
+                    if (!((newBoard.gasolineras_info.get(igas)).length > ipet)) condicions = false; 
                     // la peticio no ha estat atesa encara
-                    if (newBoard.test(igas, ipet)) condicions = false;
+                    if (newBoard.isPeticioAtesa(igas, ipet)) condicions = false;
                     
                     // Si el camió no té el viatge iviatje, crear-lo (buit)
                     while (newBoard.viajesPorCamion.get(icam).size() <= iviatje) {
@@ -74,11 +74,11 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                             if (nPet2 > 0) {
                                 ipet2 = myRandom.nextInt(board.getNPeticionsGasolinera(igas2));
                                 // comprovar que la gasolinera igas conte la peticio ipet
-                                if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
-                                if (!((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                                if (!((board.gasolineras_info.get(igas1)).length > ipet1)) condicions = false; 
+                                if (!((board.gasolineras_info.get(igas2)).length > ipet2)) condicions = false; 
                                 // la peticio ha estat atesa
-                                if (!board.test(igas1, ipet1)) condicions = false;
-                                if (!board.test(igas2, ipet2)) condicions = false;
+                                if (!board.isPeticioAtesa(igas1, ipet1)) condicions = false;
+                                if (!board.isPeticioAtesa(igas2, ipet2)) condicions = false;
                                 // viatje existeix
                                 if (!(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
                                 if (!(board.viajesPorCamion.get(icam2).size() > iviatje2)) condicions = false;
@@ -142,12 +142,12 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
                             ipet2 = myRandom.nextInt(board.getNPeticionsGasolinera(igas2));
                             
                             // comprovar que la gasolinera igas conte la peticio ipet
-                            if (!((board.gasolineras_info.get(igas1).second).length > ipet1)) condicions = false; 
-                            if (condicions && !((board.gasolineras_info.get(igas2).second).length > ipet2)) condicions = false; 
+                            if (!((board.gasolineras_info.get(igas1)).length > ipet1)) condicions = false; 
+                            if (condicions && !((board.gasolineras_info.get(igas2)).length > ipet2)) condicions = false; 
                             // Verificar que la petició 1 està atesa
-                            if (condicions && !board.test(igas1, ipet1)) condicions = false;
+                            if (condicions && !board.isPeticioAtesa(igas1, ipet1)) condicions = false;
                             // Verificar que la petició 2 NO està atesa
-                            if (condicions && board.test(igas2, ipet2)) condicions = false;
+                            if (condicions && board.isPeticioAtesa(igas2, ipet2)) condicions = false;
                             // viatje existeix
                             if (condicions && !(board.viajesPorCamion.get(icam1).size() > iviatje1)) condicions = false;
 
