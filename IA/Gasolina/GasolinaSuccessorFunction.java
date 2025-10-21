@@ -7,6 +7,12 @@ import java.util.List;
 public class GasolinaSuccessorFunction implements SuccessorFunction {
     
     public static final int limitViatgesCamio = 5;
+    private int limit;
+    
+    // Constructor que acepta un límite personalizado
+    public GasolinaSuccessorFunction(int limit) {
+        this.limit = limit;
+    }
 
     @SuppressWarnings("unchecked")
     public List getSuccessors(Object aState) {
@@ -16,7 +22,6 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         double currentValue = GasolinaHF.getHeuristicValue(board);
         board.printBeneKm();
         int counter = 0;
-        int limit = 500000;
         
         // Operador d'afegir
         for (int igas = 0; igas < board.getNGasolineras() && counter < limit; igas++) {

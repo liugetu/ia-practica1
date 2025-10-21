@@ -22,14 +22,23 @@ public class Main {
     
     public static void main(String[] args) throws Exception{
         // verificar arguments
-        if (args.length != 3) {
-            System.out.println("Error: es requereixen 3 arguments.");
-            System.out.println("Exemple d'ús: java -cp .:AIMA.jar:Gasolina.jar Main 1 0 10");
+        if (args.length != 4 && args.length != 5) {
+            System.out.println("Error: es requereixen 4 o 5 arguments.");
+            System.out.println("Exemple d'ús: java -cp .:AIMA.jar:Gasolina.jar Main {inicialitzacio} {algorisme} {num_execucions} {limit} [seed]");
+            System.out.println("inicialitzacio: 0=random, 1=greedy1, 2=greedy2, 3=buida");
+            System.out.println("algorisme: 0=hill climbing, 1=simulated annealing");
+            System.out.println("limit: límit d'iteracions per a la funció successora");
             return;
         }
         int a = Integer.parseInt(args[0]);
         int b = Integer.parseInt(args[1]);
         int NUMERO_EJECUCIONES = Integer.parseInt(args[2]);
+        int limit = Integer.parseInt(args[3]); // ahora es obligatorio
+        Integer seedFija = null;
+        
+        if (args.length == 5) {
+            seedFija = Integer.parseInt(args[4]);
+        }
         
         // inicialitzar el problema
         int ngas = 100;
@@ -60,9 +69,17 @@ public class Main {
 
         // Ejecutar el algoritmo múltiples veces
         for (int ejecucion = 1; ejecucion <= NUMERO_EJECUCIONES; ejecucion++) {
-            Random myRandom = new Random();
-            int seed1 = myRandom.nextInt(1234);
-            int seed2 = myRandom.nextInt(1234);
+            int seed1, seed2;
+            if (seedFija != null) {
+                // Usar la seed fija para todas las iteraciones
+                seed1 = seedFija;
+                seed2 = seedFija;
+            } else {
+                // Generar seeds aleatorias para cada iteración
+                Random myRandom = new Random();
+                seed1 = myRandom.nextInt(1234);
+                seed2 = myRandom.nextInt(1234);
+            }
             //GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, 1234), new Gasolineras(ngas, 1234));
             GasolinaBoard board = new GasolinaBoard(new CentrosDistribucion(ncen, mult, seed1), new Gasolineras(ngas, seed2));
 
@@ -90,7 +107,7 @@ public class Main {
             long startTime = System.nanoTime();
             if (b == 0) {     // hill climbing
                 Problem p = new Problem(initial,
-                                        new GasolinaSuccessorFunction(),
+                                        new GasolinaSuccessorFunction(limit),
                                         new GasolinaGoalTest(),
                                         new GasolinaHeuristicFunction());
 
