@@ -167,6 +167,7 @@ public class GasolinaBoard {
 
     // metode auxiliar per treure la gasolinera igas del viatge v del camio icam
     // NO actualitza els beneficis!
+    /*
     public void removeGasolineraViaje(int iviaje, int icam, int igas, int ipet) {
         Viaje v = viajesPorCamion.get(icam).get(iviaje);
         int kmOriginal1 = v.getKmRecorridos();
@@ -187,9 +188,11 @@ public class GasolinaBoard {
         kmsPorCamion[icam] -= kmEliminats; // actualitzar kms que ha fet el camio 1 en total
         costeTotalKm -= kmEliminats;       // actualitzar kms totals
     }
+    */
 
     // reassignar una peticio d'un viatge a un altre viatge del camio icam
     // post: retorna true si s'ha pogut reassignar la peticio, false altrament
+    /**
     public boolean reasignar(int icam1, int iviaje1, int igas, int ipet, int icam2) {
         // comprovar que la gasolinera igas conte la peticio ipet
         if (ipet < 0 || igas < 0 || igas >= gasolineras_info.size() || ipet >= (gasolineras_info.get(igas)).length) return false; // error
@@ -244,6 +247,7 @@ public class GasolinaBoard {
         }
         else return false;
     }
+    */
 
     // operador d'intercanviar una petició atesa per una que no ho està
     public boolean intercanvi(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2) {
@@ -515,8 +519,7 @@ public class GasolinaBoard {
                             assignada = true;
                         } 
                     }
-                    else if (viajesAsignadas.size() < limitViatgesCamio && 
-                        kmNew + kmCurrent <= limitKmCamioDiari) { // mirar si es pot afegirla a un nou viatge
+                    else if (viajesAsignadas.size() < limitViatgesCamio && kmNew + kmCurrent <= limitKmCamioDiari) { // mirar si es pot afegirla a un nou viatge
                         // crear un nou viatge per aquest camio
                         addGasolineraAViaje(ig, kmNew, ip, ic);
                         registrarPeticioAtesa(ig, ip, kmNew); // actualitzar beneficis i kms
@@ -568,7 +571,7 @@ public class GasolinaBoard {
                 int km;
                 if(kmsPorCamion[i] == 0) {
                     km = 2 * distCentroGas[i][peticions.peek().first.first];
-                    if(kmsPorCamion[i] + km <= limitKmCamioDiari) {
+                    if(kmsPorCamion[i] + km <= limitKmCamioDiari && viajesPorCamion.get(i).size() < limitViatgesCamio) {
                         addGasolineraAViaje(peticions.peek().first.first, km, peticions.peek().first.second, i);
                         kmsPorCamion[i] += km;
                         registrarPeticioAtesa(peticions.peek().first.first, peticions.peek().first.second, km);
@@ -594,7 +597,7 @@ public class GasolinaBoard {
                         int igIdx = peticions.peek().first.first;
                         int ipIdx = peticions.peek().first.second;
                         km = 2 * distCentroGas[i][igIdx];
-                        if(kmsPorCamion[i] + km <= limitKmCamioDiari) {
+                        if(kmsPorCamion[i] + km <= limitKmCamioDiari && viajesPorCamion.get(i).size() < limitViatgesCamio) {
                             addGasolineraAViaje(igIdx, km, ipIdx, i);
                             kmsPorCamion[i] += km;
                             registrarPeticioAtesa(igIdx, ipIdx, km);
@@ -655,7 +658,7 @@ public class GasolinaBoard {
                 int km;
                 if (kmsPorCamion[i] == 0) {
                     km = 2 * distCentroGas[i][igIdx];
-                    if (kmsPorCamion[i] + km <= limitKmCamioDiari) {
+                    if(kmsPorCamion[i] + km <= limitKmCamioDiari && viajesPorCamion.get(i).size() < limitViatgesCamio) {
                         addGasolineraAViaje(igIdx, km, ipIdx, i);
                         kmsPorCamion[i] += km;
                         registrarPeticioAtesa(igIdx, ipIdx, km);
@@ -676,7 +679,7 @@ public class GasolinaBoard {
                         }
                     } else {
                         km = 2 * distCentroGas[i][igIdx];
-                        if (kmsPorCamion[i] + km <= limitKmCamioDiari) {
+                        if(kmsPorCamion[i] + km <= limitKmCamioDiari && viajesPorCamion.get(i).size() < limitViatgesCamio) {
                             addGasolineraAViaje(igIdx, km, ipIdx, i);
                             kmsPorCamion[i] += km;
                             registrarPeticioAtesa(igIdx, ipIdx, km);

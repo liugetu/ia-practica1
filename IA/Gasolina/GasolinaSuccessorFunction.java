@@ -69,11 +69,13 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                 // apliquem operador intercanvi
                                 GasolinaBoard newBoard = board.copy();
                                 Boolean condicions = true;
+
+                                ++counter;
                                 
                                 // verificar que la peticio 1 està atesa
-                                if (!board.isPeticioAtesa(igas1, ipet1)) condicions = false;
+                                if (!newBoard.isPeticioAtesa(igas1, ipet1)) condicions = false;
                                 // verificar que la peticio 2 NO està atesa
-                                if (condicions && board.isPeticioAtesa(igas2, ipet2)) condicions = false;
+                                if (condicions && newBoard.isPeticioAtesa(igas2, ipet2)) condicions = false; //XD
 
                                 if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
                                     double v = GasolinaHF.getHeuristicValue(newBoard);
