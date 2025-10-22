@@ -64,25 +64,48 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
             for (int ipet1 = 0; ipet1 < (board.gasolineras_info.get(igas1)).length && counter < limit; ipet1++) {
                 for (int icam1 = 0; icam1 < board.viajesPorCamion.size() && counter < limit; icam1++) {
                     for (int iviatje1 = 0; iviatje1 < board.viajesPorCamion.get(icam1).size() && counter < limit; iviatje1++) {
-                        for (int igas2 = 0; igas2 < board.gasolineras.size() && counter < limit; igas2++) {
+                        for (int igas2 = igas1; igas2 < board.gasolineras.size() && counter < limit; igas2++) {
                             for (int ipet2 = 0; ipet2 < (board.gasolineras_info.get(igas2)).length && counter < limit; ipet2++) {
-                                // apliquem operador intercanvi
-                                GasolinaBoard newBoard = board.copy();
-                                Boolean condicions = true;
-
                                 ++counter;
                                 
-                                // verificar que la peticio 1 està atesa
-                                if (!newBoard.isPeticioAtesa(igas1, ipet1)) condicions = false;
-                                // verificar que la peticio 2 NO està atesa
-                                if (condicions && newBoard.isPeticioAtesa(igas2, ipet2)) condicions = false; //XD
-
-                                if (condicions && newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
-                                    double v = GasolinaHF.getHeuristicValue(newBoard);
-                                    if (v < currentValue) {
-                                        String S = "El camió " + icam1 + " intercanvia la seva petició "+ipet1+" de la gasolinera " +igas1+" per la petició "+ipet2+" de la gasolinera "+igas2+". Coste(" + v + ")";
-                                        retVal.add(new Successor(S, newBoard));
-                                        return retVal;
+                                // Verificar si las peticiones están en estados diferentes (una atendida, otra no)
+                                boolean pet1Atendida = board.isPeticioAtesa(igas1, ipet1);
+                                boolean pet2Atendida = board.isPeticioAtesa(igas2, ipet2);
+                                
+                                // Solo aplicar intercanvi si una está atendida y la otra no
+                                if (pet1Atendida && !pet2Atendida) {
+                                    // pet1 atendida, pet2 no atendida: intercanviar pet1 por pet2
+                                    GasolinaBoard newBoard = board.copy();
+                                    if (newBoard.intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2)) {
+                                        double v = GasolinaHF.getHeuristicValue(newBoard);
+                                        if (v < currentValue) {
+                                            String S = "El camió " + icam1 + " intercanvia la seva petició "+ipet1+" de la gasolinera " +igas1+" per la petició "+ipet2+" de la gasolinera "+igas2+". Coste(" + v + ")";
+                                            retVal.add(new Successor(S, newBoard));
+                                            return retVal;
+                                        }
+                                    }
+                                } else if (!pet1Atendida && pet2Atendida) {
+                                    // pet2 atendida, pet1 no atendida: buscar dónde está pet2 y intercanviar por pet1
+                                    boolean found = false;
+                                    for (int icam2 = 0; icam2 < board.viajesPorCamion.size() && !found; icam2++) {
+                                        for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).size() && !found; iviatje2++) {
+                                            // Buscar si la petición igas2, ipet2 está en este viaje
+                                            for (int iparada = 0; iparada < board.viajesPorCamion.get(icam2).get(iviatje2).getNGasolineras() && !found; iparada++) {
+                                                if (board.getGasolineraViaje(icam2, iviatje2, iparada) == igas2 && 
+                                                    board.getPeticioViaje(icam2, iviatje2, iparada) == ipet2) {
+                                                    GasolinaBoard newBoard = board.copy();
+                                                    if (newBoard.intercanvi(igas2, ipet2, icam2, iviatje2, igas1, ipet1)) {
+                                                        double v = GasolinaHF.getHeuristicValue(newBoard);
+                                                        if (v < currentValue) {
+                                                            String S = "El camió " + icam2 + " intercanvia la seva petició "+ipet2+" de la gasolinera " +igas2+" per la petició "+ipet1+" de la gasolinera "+igas1+". Coste(" + v + ")";
+                                                            retVal.add(new Successor(S, newBoard));
+                                                            return retVal;
+                                                        }
+                                                    }
+                                                    found = true;
+                                                }
+                                            }
+                                        }
                                     }
                                 }                        
                                 
@@ -91,7 +114,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
                                     for (int icam2 = icam1; icam2 < board.viajesPorCamion.size() && counter < limit; icam2++) {
                                         for (int iviatje2 = 0; iviatje2 < board.viajesPorCamion.get(icam2).size() && counter < limit; iviatje2++) {
                                             ++counter;
-                                            newBoard = board.copy();
+                                            GasolinaBoard newBoard = board.copy();
 
                                             // comprovar que no siguin el mateix viatge del mateix camio
                                             boolean cond2 = (icam1 == icam2 && iviatje1 == iviatje2);
