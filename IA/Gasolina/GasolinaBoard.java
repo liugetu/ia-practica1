@@ -699,7 +699,7 @@ public class GasolinaBoard {
         return board;
     }
 
-    // swap de peticions entre viatges de camions
+    /*// swap de peticions entre viatges de camions
     public boolean swap(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2, int icam2, int iviatje2) {
         Viaje v1 = viajesPorCamion.get(icam1).get(iviatje1);
         Viaje v2 = viajesPorCamion.get(icam2).get(iviatje2);
@@ -744,6 +744,54 @@ public class GasolinaBoard {
                 else return false; // error
             }
         }
+    }*/
+
+    // nuevo metodo swap que trabaja con indices de camion/viaje/posicion
+    public boolean swapByPosition(int icam1, int iviatje1, int ipos1, int icam2, int iviatje2, int ipos2) {
+        // verificar que los viajes existen
+        if (icam1 >= viajesPorCamion.size() || icam2 >= viajesPorCamion.size()) return false;
+        if (iviatje1 >= viajesPorCamion.get(icam1).size() || iviatje2 >= viajesPorCamion.get(icam2).size()) return false;
+        
+        Viaje v1 = viajesPorCamion.get(icam1).get(iviatje1);
+        Viaje v2 = viajesPorCamion.get(icam2).get(iviatje2);
+        
+        // verificar que las posiciones existen en los viajes
+        if (ipos1 >= v1.gasCount || ipos2 >= v2.gasCount) return false;
+        
+        // no permitir swap del mismo viaje consigo mismo
+        if (icam1 == icam2 && iviatje1 == iviatje2) return false;
+        
+        // realizar el swap segun las posiciones
+        if (ipos1 == 0 && ipos2 == 0) {
+            return swap_first_first(v1, v2, icam1, icam2);
+        } else if (ipos1 == 0 && ipos2 == 1) {
+            return swap_first_last(v1, v2, icam1, icam2);
+        } else if (ipos1 == 1 && ipos2 == 0) {
+            return swap_last_first(v1, v2, icam1, icam2);
+        } else if (ipos1 == 1 && ipos2 == 1) {
+            return swap_last_last(v1, v2, icam1, icam2);
+        }
+        
+        return false;
+    }
+
+    // nuevo metodo intercanvi que trabaja con indices de camion/viaje/posicion
+    public boolean intercanviByPosition(int icam1, int iviatje1, int ipos1, int igas2, int ipet2) {
+        // verificar que el viaje existe
+        if (icam1 >= viajesPorCamion.size()) return false;
+        if (iviatje1 >= viajesPorCamion.get(icam1).size()) return false;
+        
+        Viaje v = viajesPorCamion.get(icam1).get(iviatje1);
+        
+        // verificar que la posicion existe en el viaje
+        if (ipos1 >= v.gasCount) return false;
+        
+        // obtener la gasolinera y peticion actual en la posicion
+        int igas1 = v.gasVisitadas[ipos1];
+        int ipet1 = v.petVisitadas[ipos1];
+        
+        // llamar al metodo intercanvi original
+        return intercanvi(igas1, ipet1, icam1, iviatje1, igas2, ipet2);
     }
 
     /* Helpers pel swap */
