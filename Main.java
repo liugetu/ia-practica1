@@ -125,7 +125,11 @@ public class Main {
                                         new GasolinaHeuristicFunction());
 
                 // SA: param: nº max d'iteracions, temp ini, k, lambda
-                SimulatedAnnealingSearch alg = new SimulatedAnnealingSearch(100000, 1000, 5, 0.01);
+                int maxIt = 100000;
+                int tempIni = 1000;
+                int k = 1000;
+                double lambda = 0.001;
+                SimulatedAnnealingSearch alg = new SimulatedAnnealingSearch(maxIt, tempIni, k, lambda);
                 SearchAgent agent = new SearchAgent(p, alg);
                 
                 resultado = (GasolinaBoard) alg.getGoalState();
@@ -136,11 +140,11 @@ public class Main {
             // imprimir temps d'execucio
             long elapsedNs = System.nanoTime() - startTime;
             double elapsedMs = elapsedNs / 1_000_000.0;
-            System.out.println("Temps execució (ms): " + String.format("%.3f", elapsedMs));
+            System.out.println("Temps execució (ms): " + Math.round(elapsedMs));
 
             // Evaluar si este resultado es mejor que el anterior
             double beneficioActual = resultado.getBeneficiAvui();
-            System.out.println("Benefici: " + beneficioActual + ", km: " + resultado.getKm());
+            System.out.println("Benefici: " + Math.round(beneficioActual) + ", km: " + resultado.getKm());
             
             if (beneficioActual > mejorBeneficio) {
                 mejorBeneficio = beneficioActual;
@@ -163,7 +167,7 @@ public class Main {
         System.out.println("MILLOR RESULTAT TROBAT:");
         System.out.println("Execució: " + mejorEjecucion + " de " + NUMERO_EJECUCIONES);
         printInstrumentation(mejorInstrumentacion);
-        System.out.println("Final benefit: " + mejorResultado.getBeneficiAvui() + ", km: " + mejorResultado.getKm());
+        System.out.println("Final benefit: " + Math.round(mejorResultado.getBeneficiAvui()) + ", km: " + mejorResultado.getKm());
         System.out.println();
 
         // informacio sobre l'execucio

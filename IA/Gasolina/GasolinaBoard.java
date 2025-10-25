@@ -167,7 +167,6 @@ public class GasolinaBoard {
 
     // metode auxiliar per treure la gasolinera igas del viatge v del camio icam
     // NO actualitza els beneficis!
-    /*
     public void removeGasolineraViaje(int iviaje, int icam, int igas, int ipet) {
         Viaje v = viajesPorCamion.get(icam).get(iviaje);
         int kmOriginal1 = v.getKmRecorridos();
@@ -188,11 +187,9 @@ public class GasolinaBoard {
         kmsPorCamion[icam] -= kmEliminats; // actualitzar kms que ha fet el camio 1 en total
         costeTotalKm -= kmEliminats;       // actualitzar kms totals
     }
-    */
 
     // reassignar una peticio d'un viatge a un altre viatge del camio icam
     // post: retorna true si s'ha pogut reassignar la peticio, false altrament
-    /**
     public boolean reasignar(int icam1, int iviaje1, int igas, int ipet, int icam2) {
         // comprovar que la gasolinera igas conte la peticio ipet
         if (ipet < 0 || igas < 0 || igas >= gasolineras_info.size() || ipet >= (gasolineras_info.get(igas)).length) return false; // error
@@ -247,7 +244,6 @@ public class GasolinaBoard {
         }
         else return false;
     }
-    */
 
     // operador d'intercanviar una petició atesa per una que no ho està
     public boolean intercanvi(int igas1, int ipet1, int icam1, int iviatje1, int igas2, int ipet2) {

@@ -21,7 +21,7 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         GasolinaBoard board = (GasolinaBoard) aState;
         GasolinaHeuristicFunction GasolinaHF = new GasolinaHeuristicFunction();
         double currentValue = GasolinaHF.getHeuristicValue(board);
-        board.printBeneKm();
+        //board.printBeneKm();
         int counter = 0;
         
         // Operador d'afegir (optimizado para iterar solo sobre peticiones no atendidas)

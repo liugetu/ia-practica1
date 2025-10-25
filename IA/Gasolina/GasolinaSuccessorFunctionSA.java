@@ -15,7 +15,7 @@ public class GasolinaSuccessorFunctionSA implements SuccessorFunction {
         GasolinaBoard             board  = (GasolinaBoard) aState;
         GasolinaHeuristicFunction gasolinaHF  = new GasolinaHeuristicFunction();
         Random myRandom = new Random();
-        board.printBeneKm();
+        //board.printBeneKm();
         
         // Precalcular listas para evitar código repetido
         ArrayList<int[]> viajesConPeticiones = buscarViajesConPeticiones(board);
