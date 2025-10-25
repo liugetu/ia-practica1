@@ -10,6 +10,17 @@ import java.util.PriorityQueue;
 import java.lang.Math;
 import java.util.Comparator;
 
+// Simple Pair class
+class Pair<T, U> {
+    public final T first;
+    public final U second;
+
+    public Pair(T first, U second) {
+        this.first = first;
+        this.second = second;
+    }
+}
+
 public class GasolinaBoard {
     /* Class independent from AIMA classes
        - It has to implement the state of the problem and its operators
