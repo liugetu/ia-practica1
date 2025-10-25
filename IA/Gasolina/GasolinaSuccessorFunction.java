@@ -9,9 +9,9 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
     public static final int limitViatgesCamio = 5;
     private int limit;
     
-    // Constructor que acepta un límite personalizado
+    // constructor que acepta un límite personalizado
     public GasolinaSuccessorFunction(int limit) {
-        // Si el límite es -1, eliminar la restricción (establecer a infinito)
+        // si el limite es -1, eliminar la restriccion (establecer a infinito)
         this.limit = (limit == -1) ? Integer.MAX_VALUE : limit;
     }
 
@@ -27,19 +27,19 @@ public class GasolinaSuccessorFunction implements SuccessorFunction {
         // Operador d'afegir (optimizado para iterar solo sobre peticiones no atendidas)
         for (int igas = 0; igas < board.getNGasolineras() && counter < limit; igas++) {
             for (int ipet = 0; ipet < board.getNPeticionsGasolinera(igas) && counter < limit; ipet++) {
-                // Solo procesar si la petición NO está atendida
+                // solo procesar si la petición NO esta atendida
                 if (!board.isPeticioAtesa(igas, ipet)) {
                     for (int icam = 0; icam < board.viajesPorCamion.size() && counter < limit; icam++) {
                         for (int iviatje = 0; iviatje < limitViatgesCamio && counter < limit; iviatje++) {
                             ++counter;
                             GasolinaBoard newBoard = board.copy();
                             
-                            // Si el camión no tiene el viaje iviatje, crearlo (vacío)
+                            // si el camion no tiene el viaje iviatje, crearlo (vacio)
                             while (newBoard.viajesPorCamion.get(icam).size() <= iviatje) {
                                 newBoard.viajesPorCamion.get(icam).add(newBoard.new Viaje());
                             }
                             
-                            // Verificar que el viaje tiene menos de 2 gasolineras asignadas
+                            // verificar que el viaje tiene menos de 2 gasolineras asignadas
                             if (newBoard.viajesPorCamion.get(icam).get(iviatje).getNGasolineras() < 2) {
                                 if (newBoard.addPeticio(igas, ipet, icam, iviatje)) {
                                     double v = GasolinaHF.getHeuristicValue(newBoard);
