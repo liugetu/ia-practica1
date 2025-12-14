@@ -1,8 +1,10 @@
-# IA-Pràctica 1: Cerca Local - Distribució de Gasolina
+# IA Pràctica 1: Cerca Local - Distribució de Gasolina
 
-Implementació d'algoritmes de cerca local (Hill Climbing i Simulated Annealing) per resoldre el problema d'optimització de distribució de combustible a gasolineres, minimitzant costos de transport i maximitzant beneficis.
+Implementació d'algorismes de cerca local (Hill Climbing i Simulated Annealing) per resoldre el problema d'optimització de distribució de combustible a gasolineres, minimitzant costos de transport i maximitzant beneficis.
 
-## Compilació i Execució
+L'informe de la pràctica es troba en `informe-practica1.pdf`.
+
+## Compilació i execució
 
 **Compilar:**
 ```bash
